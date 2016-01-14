@@ -1,4 +1,6 @@
 workbook/*.aux
+workbook/*.bbl
+workbook/*.blg
 workbook/*.lof
 workbook/*.log
 workbook/*.out
