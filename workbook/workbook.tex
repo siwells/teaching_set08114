@@ -509,6 +509,565 @@ Log.i("org.simonwells.datetime","Button pressed");
 
 
 
+
+
+\chapter{Working with Activities \& User Interfaces}
+
+\section{Aims}
+\paragraph{} At the end of the practical portion of this topic you will be able to:
+
+\begin{itemize}
+\item Work with Android Activities
+\item Work with user input views
+\end{itemize}
+
+\section{Activities}
+\paragraph{} We will start the lab by working with activities. Remember that an activity is essentially a window that contains some user interface elements and that an app can have zero or more activities. In HelloAndroid we got a single activity by default that we used to display some views. However, using multiple activities and switching between them can be a useful way to organise your app if you want your user to navigate between multiple screens. So in this part of the lab we will look at creating activities, displaying them, and navigating between them.
+
+
+\subsection{Creating}
+\paragraph{} Creating new activities is straightforward if you are working in Android Studio as it provides helper wizards to add the new code for you. For example, if in the studio interface you right click on the app folder in the project explorer then select ``New'' $>$ ``Activity'' $>$ ``Blank Activity'' and call it `MainActivity2' then studio will add in the necessary code to support your new MainActivity2. This includes a java src file called `MainActivity2.java', an XML activity file called `activity\_main\_activity2.xml', an entry in the AndroidManifest.xml file, and an entry in the strings.xml file.
+
+\paragraph{} But to really get a feel for what is happening we need to do the job by hand. Create a new android project and test that it runs. Add a new Java src file called MainActivity2.java into the same directory as MainActivity.java and edit it as follows:
+
+\begin{lstlisting}
+package org.simonwells.multipleactivities1;
+
+import android.support.v7.app.ActionBarActivity;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+
+
+public class MainActivity2 extends ActionBarActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+}
+\end{lstlisting}
+\paragraph{} Compare the code in MainActivity.java to that in MainActivity2.java, how do they differ? What does this tell you?
+
+\paragraph{} Now create a corresponding layout for MainActivity2. In res/layout create a new xml file called `activity\_main2.xml' and edit it as follows:
+
+\begin{lstlisting}
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity">
+
+    <TextView android:text="@string/activity2_name" android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+</RelativeLayout>
+\end{lstlisting}
+
+\paragraph{} Again, compare activity\_main2.xml to activity\_main.xml and notice the differences between them. Why do you think we did this? Actually, in this case we could have kept the layout file identical but we need a way to differentiate between them once they run, that is why the text references a different string resource.
+
+\paragraph{} That is the bulk of the work necessary to create a new activity. However we are not quite ready to run out app yet. Open strings.xml and add the following to it:
+
+\begin{lstlisting}
+<string name="activity2_name">ACTIVITY TWO!!!!???!!</string>
+\end{lstlisting}
+
+\paragraph{} Now open you AndroidManifest.xml and add the following below the existing </activity>:
+
+\begin{lstlisting}
+        <activity
+            android:name=".MainActivity2"
+            android:label="@string/app_name" >
+        </activity>
+\end{lstlisting}
+
+\paragraph{} Your AndroidManifest.xml should now look like this:
+
+\begin{lstlisting}
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.simonwells.multipleactivities1" >
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".MainActivity2"
+            android:label="@string/app_name" >
+        </activity>
+    </application>
+
+</manifest>
+\end{lstlisting}
+
+\paragraph{} That is all that is needed to create a new Activity. Two new files, a java source file and an XML layout file, and a couple of edits to make sure that your app knows about the new stuff. You can now run your app.
+
+\paragraph{} Hmmm. Not much difference there? Why do you think that is? 
+
+\paragraph{} Lets edit our AndroidManifest.xml to display the new Activity instead of the default one. To do this we need to add an $<$intent-filter$>$ to our $<$activity$>$ section for the new activity and remove it from the old one, e.g.
+
+\begin{lstlisting}
+<intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+\end{lstlisting}
+
+\paragraph{} So your edited AndroidManifest.xml should look like this:
+
+\begin{lstlisting}
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.simonwells.multipleactivities1" >
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/app_name" >
+
+        </activity>
+        <activity
+            android:name=".MainActivity2"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>
+\end{lstlisting}
+
+\paragraph{} Now run your app. You should now see the second Activity displayed. You can tell the difference because instead of the ``Hello world!'' message you should see the ``ACTIVITY TWO!!!!???!!'' message. But this isn't really good enough. We can't edit the app's manifest file every time we want to create a new Activity.
+
+\subsection{Starting}
+\paragraph{} Create a new Android project to include three activity classes. Up until now we have only been using a single Activity in our applications, now we will be using multiple Activity classes we will need a way to start them. We do this through launching an “intent” and passing in the name of the activity you want to start. Check out http://developer.android.com/guide/topics/fundamentals.html for more information on Intents. Below is some simple code that will start an Activity on a Button click:
+
+\begin{lstlisting}
+Button button1 = (Button) findViewById(R.id.button1);
+button1.setOnClickListener(new OnClickListener() {
+	public void onClick(View v) {
+		Intent activityA = new Intent(MainActivity.this, ActivityA.class);
+		startActivity(activityA);
+	}
+});
+\end{lstlisting}
+
+\paragraph{} Now create a new class in your project – call it ActivityA. It doesn’t have to do anything in particular, for example – this one just displays a toast so you know you’re now in ActivityA:
+
+\begin{lstlisting}
+package com.example.w4p2;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.widget.Toast;
+
+public class ActivityA extends Activity {
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_a); //You'll need to create a layout named activity_a
+		
+		Toast.makeText(getBaseContext(), "In Activity A", Toast.LENGTH_LONG).show();
+		//Navigation back is via phones back button
+	}
+}
+\end{lstlisting}
+
+\paragraph{} Then add it to your android manifest file (which says what makes up your project).
+
+\begin{lstlisting}
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.w4p2"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="8"
+        android:targetSdkVersion="17" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name="com.example.w4p2.MainActivity"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name="ActivityA" />
+        <activity android:name="ActivityB" />
+    </application>
+</manifest>
+\end{lstlisting}
+
+\paragraph{} Now add a second activity – B – just to try it all out. What if we need to get data back from this new activity? The best way is to use a different method: startActivityForResult (activityA, 1);
+So we launch the activity then what? We need a handler to call when our activity has completed. Add this code in your main activity:
+
+\begin{lstlisting}
+protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    	//Check which request we're responding to - only 1!
+    	if (requestCode == 1) {
+    		//Make sure request was successful
+    		if (resultCode == 1) {
+    			String returnString = data.getStringExtra("String");
+    			Toast.makeText(getBaseContext(), "In main and string returned = " + returnString, Toast.LENGTH_SHORT).show();
+    		}
+    	}
+}
+\end{lstlisting}
+
+\paragraph{} And what does the activity you launch look like now? We have to get the data packaged up as we expect to receive it:
+
+\begin{lstlisting}
+String stringToReturn = "Sally Smith";
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra("String", stringToReturn);
+        setResult(1, returnIntent);
+        finish();
+\end{lstlisting}
+
+\paragraph{} Have a go! If you get stuck ask!
+
+%\subsection{Managing Multiple Activities}
+%\paragraph{} Rather than creating a new activity for every screen in your app, it make sense to reuse resources when appropriate. For example, if your user is presented with a list of items that can be displayed, you could either have an activity for each item and switch between them after user interaction, or a single activity, designed to display your items consistently, which is reused based on user interaction. Having less activities, but reusing them in a sensible manner can help to stop your app from becoming unmanageable.
+
+
+%\section{ViewGroups \& Layouts}
+%\paragraph{}
+
+
+\section{More Views: User Input}
+\paragraph{} Remember, views are widgets that have an appearance onscreen. So user input widgets, such as text inputs, can use views just as output does. Let's explore some user input.
+
+\paragraph{} Create a new project and check that it runs properly. Now delete the Hello World TextView so that we have an empty layout to play with.
+
+\paragraph{} Add a ScrollView such as the following to your layout:
+
+\begin{lstlisting}
+<ScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/scrollView"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginLeft="42dp"
+        android:layout_marginStart="42dp" >
+
+        </ScrollView>
+\end{lstlisting}
+
+\paragraph{} Your activity\_main.xml should look similar to the following:
+
+\begin{lstlisting}
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity">
+
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/scrollView"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginLeft="42dp"
+        android:layout_marginStart="42dp" >
+         
+    </ScrollView>
+
+</RelativeLayout>
+\end{lstlisting}
+\paragraph{} Don't worry if everything isn't \emph{exactly} the same. The graphical editor in Eclipse or Studio will try to be helpful and add extra parameters to give you a better layout.
+
+\paragraph{} Now add a LinearLayout as a child of the ScrollView:
+
+\begin{lstlisting}
+<LinearLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_below="@+id/scrollView"
+            android:layout_centerHorizontal="true">
+</LinearLayout>
+\end{lstlisting}
+
+\paragraph{} So you should end up with something like the following:
+
+\begin{lstlisting}
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity">
+
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/scrollView"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginLeft="42dp"
+        android:layout_marginStart="42dp" >
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_below="@+id/scrollView"
+            android:layout_centerHorizontal="true">
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</RelativeLayout>
+\end{lstlisting}
+
+\paragraph{} Neither of these elements, the ScrollView or LinearLayout do much visually. If you run the app now there isn't much to see. But they are containers which will help us to have a nice screen when we add the views in a few moments. For now, notice how the pair of $<$LinearLayout$>$ $<$/LinearLayout$>$ tags are children of, or come between, the $<$ScrollView$>$ $<$/ScrollView$>$ tags. We will deal with Layouts more in next weeks practical but for now just think of them as containers that holds views for you and automatically arrange them for you. All the ScrollView does is make its child view scrollable when the view won't fit on screen. A ScrollView can only have one child, which is our LinearLayout, but the child of the ScrollView can contain multiple further views. Lets try that out.
+
+\paragraph{} Add three TextViews and three EditTexts to your layout so that you have three pairs of TextView then EditText, e.g. TextView, EditView, TextView, EditView, TextView, EditView in a column down the screen. Make sure to give each TextView and EditView an id so that you can reference each individually.Add strings for your TextViews to display so that the first TextView is the user's name, second is email address, and third is password.
+
+\paragraph{} Your layout should now look similar to this:
+
+\begin{lstlisting}
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity">
+
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/scrollView"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginLeft="42dp"
+        android:layout_marginStart="42dp" >
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_below="@+id/scrollView"
+            android:layout_centerHorizontal="true">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="@string/name"
+                android:id="@+id/tv1" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/et1"
+                 />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="@string/email"
+                android:id="@+id/tv2"
+                 />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/et2"
+                android:inputType="textEmailAddress"
+                 />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="@string/pw"
+                android:id="@+id/tv3"
+                 />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/et3"
+                android:password="true" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</RelativeLayout>
+
+\end{lstlisting}
+
+\paragraph{} Your strings.xml should look similar to this:
+
+\begin{lstlisting}
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">UserInput</string>
+    <string name="hello_world">Hello world!!!!</string>
+    <string name="action_settings">Settings</string>
+    <string name="name">Name</string>
+    <string name="email">Email Address</string>
+    <string name="pw">Password</string>
+
+</resources>
+\end{lstlisting}
+
+\paragraph{} All other files in your project should be unchanged for now as we have only edited the layour and strings files, so try running your app now. You might want to futher adjust how things look. It is worth taking the time to do that now as this builds your experience of how Android apps work. When you run the app you should be able to input text into the three EditTexts. The password field should hide letters as you type them in. This behaviour is controlled by the following parameter of the EditText: 
+
+\begin{lstlisting}
+android:password="true"
+\end{lstlisting}
+
+\paragraph{} You should experiment with the other parameters that EditText, and other views have as you explore the Android platform features.
+
+\paragraph{} Now lets consider doing something with the text entered into the EditText fields. Lets add some features to ensure that the name field is limited to a set number of characters in length and only allows names in upper-case. Open MainActivity.java and add the following code to the OnCreate method after the call to setContentView():
+
+\begin{lstlisting}
+    EditText nameTxt = (EditText) findViewById(R.id.et1);
+    nameTxt.setFilters(new InputFilter[] {
+        new InputFilter.LengthFilter(10),
+        new InputFilter.AllCaps()
+    });
+\end{lstlisting}
+
+\paragraph{} All this is doing is creating a variable, called nameTxt, that is associated with the EditText names et1. We have then used some built in classes to set some filters on the EditText, one of which limits the length of input to 10 chars, and the other which enforces upper-case. Run your app and try it out.
+
+\paragraph{} Now lets do somethings a bit more advanced. Lets check the content of the supplied password to see whether it passes muster. For example, lets assume that the supplied password must contain a mixture of letters and numbers. A simple way to do this is to add a button which, when clicked, will take the text in the password field and tell us whether it is valid. So, add a button to your layout, inside the LinearLayout and after the last EditText:
+
+\begin{lstlisting}
+<Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/go"
+        android:id="@+id/btn1"
+        android:layout_below="@+id/scrollView"
+        android:layout_centerHorizontal="true" />
+\end{lstlisting}
+
+\paragraph{} and add its content to the strings.xml e.g.
+
+\begin{lstlisting}
+<string name="go">GO!</string>
+\end{lstlisting}
+
+\paragraph{} You can run your app now and the button will be visible but it won't do anything because we haven't given it a handler to response to click events. So lets do that, add the following code to the OnCreate method of MainActivity.java after your code that added the input filters to the name field.
+
+\begin{lstlisting}
+final EditText pwfield = (EditText) findViewById(R.id.et3);
+    Button go_button = (Button) findViewById(R.id.btn1);
+    go_button.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            String text = pwfield.getText().toString();
+
+            boolean valid = true;
+            boolean hasNumbers = false;
+            boolean hasLetters = false;
+
+            for (int i=0; i<text.length(); i++) {
+                char x = text.charAt(i);
+                if (Character.isDigit(x)){
+                    hasNumbers = true;
+                }
+                else if (Character.isLetter(x)) {
+                    hasLetters = true;
+                }
+                else {
+                    valid = false;
+                    break;
+                }
+                if (valid && hasLetters && hasNumbers) {
+                    Toast.makeText(getBaseContext(), "Password " + text + " is valid.", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Toast.makeText(getBaseContext(), "Password " + text + " is not valid.", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        }
+
+    });
+\end{lstlisting}
+
+\paragraph{} Most of this is normal Java. You should try to read the code to ensure that you understand exactly what is happening and why.
+
+\paragraph{FURTHER EXERCISE} Try to add a handler for the email field which ensure that the supplied email address is correctly formatted. If you are unsure what constitutes a valid email address then it might be worth finding out more\footnote{\begin{itemize}\item Wikipedia Email Address Page: \url{http://en.wikipedia.org/wiki/Email_address} \item RFC5321 \url{http://tools.ietf.org/html/rfc5321} \item StackOverlfow discussion: \url{http://stackoverflow.com/questions/6119722/how-to-check-edittexts-text-is-email-address-or-not}\end{itemize}}.
+
+
+\section{Summary}
+\paragraph{} In this practical we have 
+
+\begin{itemize}
+\item Learnt about Activities
+\item Worked with user input
+\end{itemize}
+
+
+
+
 %%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%
 % CASE STUDIES 
