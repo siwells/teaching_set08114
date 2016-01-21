@@ -1622,7 +1622,293 @@ Assume that you have an API available which will allow your device to remotely r
 \end{itemize}
 
 
-%\part{Notes}
+\part{Notes}
+\chapter{Introduction to Mobile Computing} 
+
+\section{Aims}
+\paragraph{} At the end of this topic you will be able to:
+
+\begin{itemize}
+\item Explain where ‘mobile app’ development fits into the recent history of computing \& mobile computing. 
+%\item Develop an Android app % In 2016 will include Hello Android but not in 2015
+\end{itemize}
+
+
+\section{The Rise of Mobile Computing}
+\paragraph{} Today's mobile phone owes its origins to radio phones which were introduced on first class passenger trains in Germany in 1926. Mobile technology was enhanced during WW2 when Motorola created a walkie-talkie for the US Army – which was carried in a backpack to house the huge batteries.
+
+\paragraph{} Following the development of cell-based transmitters and receivers in the late 1940s, the 1950s saw car phones making use of this cell technology although calls were not continuous as the car travelled from one cell to the next.
+
+\paragraph{} In 1956 Ericsson created the first system that did not require manual control in the base stations in Sweden. Unfortunately the phone weighed 40 kilograms so not mobile in the sense we understand today.
+
+\paragraph{} Until 1970 mobile technologies continued to be developed mainly in US and USSR. In 1971 an engineer from Bell Labs found a solution for transferring the call from a network to another without loss of communication. In 1973 Motorola made its first call on a truly mobile phone, illustrated in Figure \ref{fig:brick-phone}, – which is now referred to as the first generation. After specialising in military communications, Vodaphone launched the UKs mobile network in 1985. By the mid to late 1980s the mobile phone was the must have status symbol of business wheelers and dealers in Thatcherite Britain.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.5\textwidth]{images/brick-phone}
+\caption{Motorola's mass marketed phone from 1973}
+\label{fig:brick-phone}
+\end{figure}
+
+\paragraph{} In the 1990s the second generation of phones appeared – introducing digital technology in the form of GSM (Global System for Mobile communications) into the networks. In Europe Nokia was a key developer of GSM and the first GSM network was opened in Finland. This second generation of mobile phones introduced the SMS service – arguably the start of social networking. Customisation started here – with downloadable, if expensive, ring tones – and business users were overtaken by the general population driven by a huge interest from younger users.
+
+\paragraph{} Third generation networks \& devices appeared in Japan in 2001. The main aim was to satisfy the demand for data services  i.e. move to packet switching to speed things up so we could get internet-on-the-go, swap photos and video. The i) mobile phone and ii)PDAs/ netbooks with dongles started to converge with the smartphone emerging as the product of their convergence. 
+
+\paragraph{} The fourth generation is fast approaching – VoIP will replace traditional circuit switched calls in a network optimised for data services. At the moment it’s just a marketing term.
+
+\section{Recent History of Mobile Computing}
+
+\begin{itemize}
+
+\item The first commercial laptop illustrated in Figure \ref{fig:grid-compass}, the GRiD Compass\footnote{\url{http://en.wikipedia.org/wiki/Grid_Compass}} started selling in 1982 at a price tag of \$8000 the main customer was the US Department of Defence and NASA.
+
+\item Personal Digital Assistant was a term used to describe the Apple Newton  illustrated in Figure \ref{fig:apple-newton}, first sold in 1992. PDAs could keep calendars, play games, synch with your desktop. Although there was a proliferation of manufacturers' operating systems, the Symbian OS came to dominate, with MS following with their Microsoft CE OS.
+
+\item The Nokia 9000  illustrated in Figure \ref{fig:nokia-9000}, was released 1996. A phone which could send/receive emails and type up Word docs. Arguably the world's first smartphone.
+
+\item In 2002, Blackberry manufacturers Re-search in Motion (RIM) released their first smartphone,  illustrated in Figure \ref{fig:rim-blackberry}, following their successful push email technology. Popular amongst business users originally, the Blackberry found a new market amongst teenage girls thanks to the BlackBerry Messenger app, before declining in popularity.
+
+\item The first Apple iPhone, illustrated in Figure \ref{fig:apple-iPhone}, was released in June 2007. The latest version, 4, was released in July 2010 (following the iPad release in April 2010). The iPhone was the first smartphone with mass market appeal.
+
+\item In October 2008, the first Android phone – the HTC Dream (aka T-Mobile G1), illustrated in Figure \ref{fig:android-phone}, – was released. This was followed by the HTC Hero and now HTC Desire \& Samsung Galaxy, among others. Encouraged by the open nature of the development kit, this is creating a garage app developer culture.
+
+\end{itemize}
+
+\begin{figure}[htb]
+        \centering
+        \begin{subfigure}[b]{0.3\textwidth}
+                \includegraphics[width=\textwidth]{images/grid-compass}
+                \caption{GRiD Compass}
+                \label{fig:grid-compass}
+        \end{subfigure}%
+        ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc.
+          %(or a blank line to force the subfigure onto a new line)
+        \begin{subfigure}[b]{0.3\textwidth}
+                \includegraphics[width=\textwidth]{images/apple-newton}
+                \caption{Apple Newton}
+                \label{fig:apple-newton}
+        \end{subfigure}
+        ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc.
+          %(or a blank line to force the subfigure onto a new line)
+        \begin{subfigure}[b]{0.3\textwidth}
+                \includegraphics[width=\textwidth]{images/nokia-9000}
+                \caption{Nokia 9000}
+                \label{fig:nokia-9000}
+        \end{subfigure}
+        \caption{The GRiD Compass, Apple Newton, \& Nokia 9000}\label{fig:early-mobile-platforms-1}
+\end{figure}
+
+\begin{figure}[htb]
+        \centering
+        \begin{subfigure}[b]{0.3\textwidth}
+                \includegraphics[width=\textwidth]{images/rim-blackberry}
+                \caption{RIM Blackberry}
+                \label{fig:rim-blackberry}
+        \end{subfigure}%
+        ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc.
+          %(or a blank line to force the subfigure onto a new line)
+        \begin{subfigure}[b]{0.3\textwidth}
+                \includegraphics[width=\textwidth]{images/apple-iphone}
+                \caption{Apple iPhone}
+                \label{fig:apple-iPhone}
+        \end{subfigure}
+        ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc.
+          %(or a blank line to force the subfigure onto a new line)
+        \begin{subfigure}[b]{0.3\textwidth}
+                \includegraphics[width=\textwidth]{images/android-phone}
+                \caption{Android Phone}
+                \label{fig:android-phone}
+        \end{subfigure}
+        \caption{The Blackberry, iPhone, \& Android}\label{fig:early-mobile-platforms-1}
+\end{figure}
+
+
+
+\paragraph{} \emph{Where are we now?} The line between communication and computation has become increasingly blurred. A smartphone is now a handheld computer with integrated mobile phone (and pager, compass, camera, GPS, torch, ...)
+
+\begin{quote}
+"I have always wished for my computer to be as easy to use as my telephone; my wish has come true because I can no longer figure out how to use my telephone." 
+— Bjarne Stroustrup  (Danish inventor of C++)
+\end{quote}
+
+\paragraph{} What do we expect of our mobile computing devices?
+\begin{itemize}
+\item phone
+\item touchscreen or at least easy character entry
+\item email
+\item camera \& memory to save photos
+\item audio \& video recorder \& player
+\item web browsing
+\item app platform eg games
+\item reasonable battery life
+\item small?
+\end{itemize}
+
+\paragraph{} Less discerning about:
+\begin{itemize}
+\item price - not necessarily cost conscious, at the moment
+\item shelf life
+\end{itemize}
+
+\paragraph{} So what's the current state of play? Check with Gartner, market analysts. Android phones and iPhones continue to increase their market share.  New markets include the developing world – Huawei Telecom in China are manufacturing cheap Androids for India and Africa. There is also growth in iPad/ Android tablets.
+ 
+
+ %%
+ %%
+ %% INSERT SECTION ON GARTNER SALES FIGURES
+ %%
+ %%
+ %%
+
+
+ \paragraph{} To a large extent the availability of apps is driving these increases for the iPhone and Android. Blackberry launched their own apps market and saw some growth in their handset sales. Meanwhile Symbian have opened up their OS. Huawai Telecom have launched a cheap Android phone in India – the Ideo. It’s hard to see a way for the iPhone to reach the developing world.
+
+
+\section{Summary}
+\paragraph{} In this topic we have attempted to understand why mobile computing and communication have become popular now by studying longer term trends in the wider fields of computing and communication.
+
+\section{Directed Study}
+\paragraph{} 
+
+\begin{itemize}
+\item Read Chapters 1 to 3 of Android Wireless Application Development \cite{conder_2010_android_ebook}.
+\item Read more about the history of mobile computing, for example the Wikipedia page on the history of mobile phones is a good place to start\footnote{\url{http://en.wikipedia.org/wiki/History_of_mobile_phones}}.
+\item Visit the developers website http://developer.android.com
+\item Check your understanding of the topic by answering the following:
+\begin{enumerate}
+\item Name three apps you have used/ heard about and identify the platform they run on?
+\item What makes a good app?
+\item In Android-speak, what is an activity?
+\item How do Intents work?
+\end{enumerate}
+\item If you have access to a computer at home, download and install the Oracle Java JDK\footnote{\url{http://www.oracle.com/technetwork/java/javase/downloads/index.html}} then install the Android development tools\footnote{\url{http://developer.android.com/sdk/index.html}}.
+\item Have a look at the App Inventor\footnote{\url{http://appinventor.mit.edu/}}  – what do you think – can this revolutionise app development? It was initially developed by Google then, when abandoned, MIT stepped in.
+\end{itemize}
+
+
+%\section{Resources}
+
+
+\chapter{Platforms \& Lifecycles}
+
+\section{Aims}
+\paragraph{} At the end of this topic you will be able to:
+
+\begin{itemize}
+\item Describe what Android is
+\item Describe and use the Android SDK
+\item Select and use an IDE
+\item Understand the components of an Android App
+\item Understand the Activity life-cycle
+\end{itemize}
+
+\section{Introducing Android} 
+\paragraph{} As you can see we have lots of options for how to develop software for mobile devices. For the practical part of this module, we are going to use Android.
+
+\begin{framed}
+\begin{quote}
+Android is Google's operating system for mobile devices based on ARM architecture. It is a competitor to the Symbian platform, Apple's iOS for the iPhone and Microsoft's Windows Mobile and Windows Phone for mobile devices all based on ARM architecture.
+Android sits on a modified Linux kernel and includes middleware which allow you access to the hardware and key applications. It lets you develop Java but, as with applets on the web, there are some constraints and a philosophical framework.
+The Android operating system software stack consists of Java applications running on a Java based object oriented application framework on top of Java core libraries running on a Dalvik virtual machine featuring JIT compilation. … The Android operating system consists of 12 million lines of code including 3 million lines ofXML, 2.8 million lines of C, and 2.1 million lines of Java
+\end{quote}
+
+{\begin{flushright}Source: Wikipedia\\\url{http://en.wikipedia.org/wiki/Android_(operating_system)}\end{flushright}}
+\end{framed}
+
+\paragraph{} Android was launched by Google/Open Handset Alliance in November 2007 with a competition for developers to design and build prize winning apps – they offered \$1m in prize money. This kick started the Android marketplace. One of the winning apps was an automatic taxi ordering service which read your location in New York and with a single button press ordered a taxi to pick you up; perhaps reason enough to buy a phone?\footnote{See more winners at \url{http://code.google.com/android/adc/gallery_winners.html}}
+
+
+\section{Development Tools}
+\subsection{The SDK}
+\paragraph{} The Android SDK is the core set of tools that the Android project have released so that we can develop our own Android apps. The SDK is a mix of tools, that work primarily from the command line, and libraries, which your code can hook into to make use of Android platform features. Whilst the tools work from the command line, there is additional software that you can use to provide graphical user interfaces to the Android tools. For example, Android Studio is an Integrated Development Environments (IDE) which provide a graphical development environment to the command line tools of the SDK. You can build Android apps using only the SDK, however many developers feel more comfortable using an IDE.
+
+\subsection{Development Environments}
+\paragraph{} Since December 2014 when version 1.0 was released, the main IDE for Android development has been Android Studio. Prior to this the main IDE was Eclipse, a popular Java development IDE with additional plugins to support Android development. 
+
+\subsection{The Android Debug Bridge}
+\paragraph{} Because Android apps are designed and built to run on devices using the Android OS, and not your desktop OS such as Linux, Mac OS, or Windows, you need to provide a way for any apps that you produce to run so that you can test them. For this you have a few options, but you must do at least one of these if you want to be able to run your Android app (and determine that it runs correctly):
+
+\begin{enumerate}
+\item The Android Emulator/Android Virtual Device (AVD) - Your IDE provides tools that allow you to run a program that emulates an Android device. In Studio these can be found under Tools $>$ Android $>$ AVD Manager. AVD stands for Android Virtual Device which is the emulated version of the Android OS. Use the AVD Manager to create new devices with various hardware capabilities and software levels. However you should note that emulation is very very very slow. In particular on lab machines, which are running the emulation across the network, you must create AVDs which are very conservative in their hardware, e.g. use lower amounts of RAM, 256MB should be sufficient for most lab practicals, and which use a smaller screensize, e.g. 
+\item Hardware - If you have an Android device then you can enable the USB Debugging mode, plug it into your development machine, and it should appear as a connected device which you can select as a target to run your app on. This mode is hidden in a different place on different Android devices so you might have to do a web search for your ``device name+model+enable USB debugging mode''. On OS X and Linux this should 'just work'. On Windows you may have to install drivers for your mobile device before it can be recognised and used to debug Android apps.
+\item Virtual Machine - Genymotion\footnote{\url{https://www.genymotion.com/}} is probably the best third party solution for faster virtual Android devices. Underneath it uses the VirtualBox virtualisation software and is much faster than the AVD approach.
+\end{enumerate}
+
+
+\section{Architecture of the Android Platform}
+ 
+\begin{figure}[htb]
+\centering
+\includegraphics[width=\textwidth]{images/architecture-android}
+\caption{The architecture of the Android platform}
+\label{fig:architecture-android}
+\end{figure}
+
+\section{The Components of apps}
+\paragraph{} Android has been designed to let developers take advantage of all the hardware nestling inside your phone. It does this through activities which “do stuff”, services which “do background stuff”,  reusing another app’s functionality (if granted permission) and publishing functionality. Specifically an application is made up of components and a messaging service to communicate between them:
+
+\subsection{Activities}
+Think of as a single view or window and one per screen – you can move pages by launching another activity. User interface components are called Views and include scroll-bars, text strings etc (similar to swing components in Java or controls in VS).
+
+\subsection{Services}
+A service doesn't have a visual user interface. They run in the background. For example, a service might play background music. Each service extends the Service base class.
+
+\subsection{Broadcast Receivers}
+A broadcast receiver is a component that responds to system-wide announcements, for example, that the music player has been switched on, that the battery is low. Your app can also broadcast some information for other apps running on the phone – and interested apps can, as BroadcastReceivers, receive the message (eg change of timezone) and apps can also be BroacastReceivers by extending the BroadcastReceiver base class. You might want to notify the user - through the NotificationManager. These notifications appear on the status bar.
+
+\subsection{Content Provider}
+A wrapper for databases and files, the content provider can make app data available to other apps
+
+\section{The Activity Lifecycle}
+
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.8\textwidth]{images/android_lifecycle_original}
+\caption{The lifecycle of Android activities.}
+\label{fig:lifecycle-android-activities}
+\end{figure}
+
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=\textwidth]{images/android_lifecycle_state-diagram}
+\caption{A slightly re-arranged diagram of the lifecycle of Android activities.}
+\label{fig:lifecycle-android-activities-state-diargram}
+\end{figure}
+
+
+
+\paragraph{} Activities and services are activated by intents. Intents are asynchronous messages used by the OS to match task requests with activities and services. The Intent object is a bundle of information: it ``contains information of interest to the component that receives the intent (such as the action to be taken and the data to act on) plus information of interest to the Android system (such as the category of component that should handle the intent and instructions on how to launch a target activity)''\footnote{\url{http://developer.android.com/guide/topics/intents/intents-filters.html}}.
+
+
+\paragraph{} Instead of a main method defining where things kick off, you must define a class which extends (or inherits from) Activity. An Activity class simply means that it can run and do stuff.
+The onCreate() method will be called when your Activity starts — it is where you should perform all initialization and UI setup. The onCreate() method will be called by the Android system when your Activity starts — it is where you should perform all initialization and UI setup. [The @Override statement is a Java convention - it simply flags up your intention to override a method in the superclass so the compiler can check that’s what you actually end up doing – and flag it if that’s not what the net effect is.] The Bundle is a mechanism for living with the complexity of multiple activities, multiple entry points etc. The bundle refers to the data required to run your activity effectively – eg what is the current state of your activity, have you been interrupted by a phone call for example.
+A View is a drawable object eg button, image or, in this case, some text. TextView is a subclass of view. We construct a TextView object (tv). The constructor parameter this refers to is an Android Context. A Context is a handle to the system – providing preferences, access to databases etc. The Activity class inherits from the Context so this is a context.  
+The app then calls the setText() method of the tv object.
+Finally, you pass the tv to setContentView() in order to display it as the content for the Activity UI. If your Activity doesn't call this method, then no UI is present and the system will display a blank screen.
+
+
+
+
+\section{Summary}
+\paragraph{} In this topic we have learnt to:
+
+\begin{itemize}
+\item Describe what Android is
+\item Describe and use the Android SDK
+\item Select and use an IDE
+\item Understand the components of an Android App
+\item Understand the Activity life-cycle
+\end{itemize}
+
+
+%\section{Directed Study}
+%\paragraph{}
+
+%\section{References \& Resources}
+
+
 
 
 
