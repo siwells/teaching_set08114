@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">LoggingExample</string>
+    <string name="hello_world">UPDATE ME</string>
+    <string name="hello_second">Hello from the second screen</string>
+    <string name="action_settings">Settings</string>
+    <string name="second_screen_button">Launch second screen</string>
+    <string name="title_activity_second_screen">SecondScreen</string>
+
+</resources>
