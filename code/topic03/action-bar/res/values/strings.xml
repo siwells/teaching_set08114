@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">ActionBarTest</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="hello_lincrea">Hello Lincrea!</string>
+    <string name="hello_napier">Hello Napier!</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_lincrea">LINCREA</string>
+    <string name="action_napier">NAPIER</string>
+    <string name="title_activity_lincrea">LincreaActivity</string>
+    <string name="title_activity_napier">NapierActivity</string>
+
+</resources>
