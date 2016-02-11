@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">MultiColourButton+TextView</string>
+    <string name="colour_button">Push Me</string>
+</resources>
