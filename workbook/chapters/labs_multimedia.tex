@@ -1,0 +1,421 @@
+\section{Aims}
+\paragraph{} At the end of the practical portion of this topic you will be able to:
+
+\begin{itemize}
+\item Display Images
+\item Use the camera
+%\item Play Sounds \& Movies
+\end{itemize}
+
+\section{Display Images}
+\paragraph{} Displaying images is actually quite straightforward as Android provides us with a view that handles displaying them for us. So this is an easy way to start the practical. We will use the ImageView view to manage our image. An ImageView is another XML fragment that we can add to a layout which references an image resource. The image resources is the actual image file that will be displayed and which is stored in the resources section of our project.
+
+\paragraph{} The XML for an ImageView looks like this:
+
+\begin{lstlisting}
+<ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageView"
+            android:layout_gravity="center_horizontal" />
+\end{lstlisting}
+
+\paragraph{} But obviously there are many additional parameters that you can set for our ImageView. The most important is android:src which tells Android where to find our Image. So let's get started. Create a new Android project and delete the `Hello World' message. Add a LinearLayout to your blank activity\_main.xml to help us easily keep things organised. Now copy a small image file in png format to the drawable folder of your project(if you don't have such a file then a quick Google image search will find one for you). You can do this either through your IDE or directly within the file manager of your OS. Now add an ImageView to your layout with the android:src parameter pointing to your new image file. Your activity\_main.xml layout should now look something like this (notice we have added the ImageView as a child of the LinearLayout):
+
+\begin{lstlisting}
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentTop="true">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageView"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/krakenlogo"/>
+    </LinearLayout>
+</RelativeLayout>
+\end{lstlisting}
+
+\paragraph{} You should now be able to run your project and bask in the glory of your new ImageView.
+
+\section{Using the Camera}
+\paragraph{} You can use the camera hardware of an Android device in a number of ways. For example, using an intent to launch a built-in camera app or write code to work with the camera device itself.
+
+\subsection{Camera Intents}
+\paragraph{} Create a new Android project and delete the `Hello World' TextView. We are going to add a LinearLayout and ImageView to our activity\_main.xml, and edit MainActivity.java to add a click handler attached to our ImageView which will launch the camera app using an Intent. Let's start with activity\_main.xml which, after editing, should look similar to this:
+
+\begin{lstlisting}
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:id="@+id/display_pic"
+            android:src="@drawable/ic_launcher"/>
+    </LinearLayout>
+</RelativeLayout>
+\end{lstlisting}
+
+\paragraph{} Now we can edit our MainActivity.java to do something with this layout. We will create a click handler for the ImageView in the onCreate method. When we touch the ImageView the click handler will create an ACTION\_IMAGE\_CAPTURE intent. When this intent finishes it will return the results of the activity that the intent launched. We will access these results by implementing an onActivityResult method in which we will access the data, a bitmap image, from our result and replace our ImageView with the new bitmap.
+
+\begin{lstlisting}
+package org.simonwells.testcameraintent;
+
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.provider.MediaStore;
+import android.support.v7.app.ActionBarActivity;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+
+
+public class MainActivity extends ActionBarActivity {
+
+    ImageView imgFav;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        imgFav = (ImageView) findViewById(R.id.display_pic);
+        imgFav.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(intent, 0);
+            }
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (data != null)
+        {
+            Bitmap bp = (Bitmap) data.getExtras().get("data");
+            imgFav.setImageBitmap(bp);
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+}
+\end{lstlisting}
+
+\subsection{Using the camera from code}
+\paragraph{} Sometimes we will want to take pictures using the camera but without launching the camera app. For example, if you wanted to make a security app that took pictures on a given schedule then your app would need to take the picture itself rather than waiting for someone to click the `take pictue' button. Using the camera from our code just requires us to set the necessary manifest permissions then to write some Java code that uses the android hardware API for the camera.
+
+\paragraph{} Create a new Android project and delete the `Hello World' TextView. To use the camera we need to add the following two nodes to our Android manifest:
+
+\begin{lstlisting}
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-feature android:name="android.hardware.camera"/>
+\end{lstlisting}
+
+\paragraph{} We also want to store any pictures taken to the external storage so we also need permission for that:
+
+\begin{lstlisting}
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+\end{lstlisting}
+
+\paragraph{} After editing our AndroidManifest.xml should look something like this:
+
+\begin{lstlisting}
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.simonwells.testcameraapi2" >
+
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-feature android:name="android.hardware.camera"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>
+\end{lstlisting}
+
+\paragraph{} Now let's add a vertical LinearLayout and a button to our activity that we can use to tell the camera to take a picture. NB. We also need to add a string to strings.xml for the @string/take\_pic text. After editing our activity\_main.xml should look similar to this:
+
+\begin{lstlisting}
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true">
+
+        <Button
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/take_pic"
+            android:id="@+id/btn1" />
+    </LinearLayout>
+</RelativeLayout>
+\end{lstlisting}
+
+\paragraph{} The rest of our edits should be to MainActivity.java only. We will be working in the MainActivity class and need to create a Camera object, e.g.
+
+\begin{lstlisting}
+    private Camera mCamera = null;
+\end{lstlisting}
+
+\paragraph{} The rest of our edits will be in two method of the MainActivity class. We first need to override an Activity life-cycle method called onPause() as follows:
+
+\begin{lstlisting}
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+        if (mCamera != null){
+            mCamera.release();
+            mCamera = null;
+        }
+    }
+\end{lstlisting}
+
+\paragraph{} This is important because before we do anything with the camera resource on our hardware we need to ensure that we are releasing that resource otherwise subsequent uses of the camera, including from our own app, might fail. The rest of our edits are now to the onCreate method as follows. Let's take a look at the new code then work our way through it:
+
+\begin{lstlisting}
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        try { mCamera = Camera.open();}
+        catch(Exception e) { e.printStackTrace(); }
+
+        final Camera.PictureCallback mPicture = new Camera.PictureCallback() {
+            @Override
+            public void onPictureTaken(byte[] data, Camera camera) {
+
+                File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
+                        Environment.DIRECTORY_PICTURES), "MyCameraApp");
+                if(! mediaStorageDir.exists())
+                {
+                    if(! mediaStorageDir.mkdirs())
+                        { Log.d("MyCameraApp", "failed to create directory"); }
+                }
+
+                String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+                File mediaFile = new File(mediaStorageDir.getPath() + File.separator + "IMG_"+ timeStamp + ".jpg");
+
+                try
+                {
+                    FileOutputStream fos = new FileOutputStream(mediaFile);
+                    fos.write(data);
+                    fos.close();
+                }
+                catch (FileNotFoundException e)
+                {
+                    Log.d("SIMON", "File not found: "+ e.getMessage());
+                }
+                catch (IOException e)
+                {
+                    Log.d("SIMON", "Error accessing file: "+ e.getMessage());
+                }
+            }
+        };
+
+        Button captureButton = (Button) findViewById(R.id.btn1);
+        captureButton.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCamera.takePicture(null, null, mPicture);
+            }
+        });
+    }
+\end{lstlisting}
+
+\paragraph{} The first thing we do is to use a try-catch clause to get a reference to the device's camera. We then create a PictureCallback object called `mPicture' add override the onPictureTaken method which is the place where we get take the image data supplied by the camera and turn that into a file on the SD card. Most of the contents of this method actually deal with getting a reference to the public storage area of the SD card then storing the picture data. It should be reasonable familiar to you from the `Data Persistence' practical and topic. After the PictureCallback we have a button handler. This is where the actual picture is taken by the camera. When the button in our layout is clicked, our camera object is accessed and it's takePicture method is called and supplied with the name of the callback `mPicture' to call with the picture data. The full MainActivity.java should look something similar to this:
+
+\begin{lstlisting}
+package org.simonwells.testcameraapi2;
+
+import android.hardware.Camera;
+import android.os.Environment;
+import android.support.v7.app.ActionBarActivity;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+
+public class MainActivity extends ActionBarActivity {
+
+    private Camera mCamera = null;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        try { mCamera = Camera.open();}
+        catch(Exception e) { e.printStackTrace(); }
+
+        final Camera.PictureCallback mPicture = new Camera.PictureCallback() {
+            @Override
+            public void onPictureTaken(byte[] data, Camera camera) {
+
+                File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
+                        Environment.DIRECTORY_PICTURES), "MyCameraApp");
+                if(! mediaStorageDir.exists())
+                {
+                    if(! mediaStorageDir.mkdirs())
+                        { Log.d("MyCameraApp", "failed to create directory"); }
+                }
+
+                String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+                File mediaFile = new File(mediaStorageDir.getPath() + File.separator + "IMG_"+ timeStamp + ".jpg");
+
+                try
+                {
+                    FileOutputStream fos = new FileOutputStream(mediaFile);
+                    fos.write(data);
+                    fos.close();
+                }
+                catch (FileNotFoundException e)
+                {
+                    Log.d("SIMON", "File not found: "+ e.getMessage());
+                }
+                catch (IOException e)
+                {
+                    Log.d("SIMON", "Error accessing file: "+ e.getMessage());
+                }
+            }
+        };
+
+        Button captureButton = (Button) findViewById(R.id.btn1);
+        captureButton.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCamera.takePicture(null, null, mPicture);
+            }
+        });
+    }
+
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+        if (mCamera != null){
+            mCamera.release();
+            mCamera = null;
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+}
+\end{lstlisting}
+
+\paragraph{} Obviously there are many more things you can do with the camera and you should look to the Android library documentation for more details. However you should also note that as of API level 21 the android.hardware.Camera library is deprecated in favour of the new, replacement android.hardware.camera2 API. Because this API level is so new, and hence will not likely be available on many of the platforms that will want to target right now, we have used the deprecated libraries. As the share of Android devices using API level 21 increases then we will consider moving to the camera2 API instead.
+
+%\section{Playing Sounds \& Movies}
+%\paragraph{} 
+
+
+\section{Summary}
+\paragraph{} In this practical we have learnt to
+
+\begin{itemize}
+\item \item Display Images
+\item Use the camera
+%\item Play Sounds \& Movies
+\end{itemize}
+
+
