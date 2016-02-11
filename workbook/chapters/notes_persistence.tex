@@ -1,0 +1,63 @@
+\chapter{Persisting Your Data in a Mobile World}
+
+\section{Aims}
+\paragraph{} At the end of this topic you will be able to:
+
+\begin{itemize}
+\item 
+\end{itemize}
+
+\paragraph{} Once you have come up with a great app idea there are various processes that you start to work through. The design process, and the methodology that supports it, are two important processes. One of the outcomes that stem from these early processes is an awareness of the data that your app will use. In this respect app development is {\emph{just}} like any other software development project. You have to determine what data is important to your app, how it is structured, and how it will be stored.
+
+\paragraph{} As with nearly every other topic in this area, app devlopment doesn't simplify the process of designing and producing software but piles on special cases. Data storage is no exception. Whilst developing for the desktop or server generally assumes hard-drive technology, at least for the moment, there are relatively few choices to be made about data storage; essentially will my data be stored in files on disk or in a database. Mobile devices offer various types of storage and your app may well end up storing and using data from a variety of locations. These options include:
+
+\begin{itemize}
+\item Shared Preferences - Private key-value storage of primitive data types (such as int, double, float, string, etc)
+\item Internal Storage - Private ``documents'' directory for file storage which can only be accessed by your application
+\item External Storage - Public file storage, usually on an expandable storage device such as an SD card
+\item Database - Private data storage in a database on the device
+\item Network - Storage of data on remote servers, either through a custom built API or using a data storage service. ({\emph{NB. We include this point merely for completeness. We will look at remote storage as a part of the connectivity topic because it is intimately connected with the skills required to transmit data to and remote Application Programming Interfaces (APIs) and use networking.}})
+\end{itemize}
+
+\paragraph{} In addition to the above mentioned data storage options, additional apps can be installed locally to provide hybrid data storage functionality. For example, installation of a stand-alone DB, for example a NoSQL DB, to provide DB services different to the built in DB (e.g. SQLite) and which is accessed as another app or service running locally. NB. This kind of approach can complicate deployment of your app, as it will now require the presence of an additional, non-standard, service running on your target device, but also potentially offers functionality that you might not otherwise be able to easily achieve otherwise.
+
+
+\section{Preferences}
+\paragraph{}
+
+\subsection{Saving Files}
+\paragraph{} Most mobile platforms, with the notable exception of Apple's iOS, offerinternal and external storage for user data. Usually this means that the internal storage is built into the device and the external storage is some kind of expandable external hardware such as SD-cards. Android devices, for example, offer both internal and external storage and there are some small differences between the two which developers should be aware of, these are summarised as follows:
+
+\begin{description}
+\item[Internal]
+    \begin{itemize}
+    \item Always accessible
+    \item Accessible only by the `owning' app, i.e. your apps files are only available to your app (by default - this behaviour can be overridden)
+    \item System automatically removes all of an app's files when the app is uninstalled
+    \end{itemize}
+\item[External] 
+    \begin{itemize}
+    \item Not necessarily accessible. Might be on a removeable medium and therefore might not currently be attached
+    \item World readable so you can't guarantee, be default, that other apps might not read your app's files
+    \item Files are not necessarily removed on uninstallation. You have to take measures to ensure that your apps files are removed from this storage on uninstallation
+    \end{itemize}
+\end{description}
+
+\subsection{Internal/Onboard}
+\paragraph{} Internal storage usually refers to the built-in storage offered by your device. This is in contrast to the expandable storage offered by technologies like SD-cards, compact flash, USB, etc. 
+
+\subsection{External/SD-Card}
+\paragraph{} In this topic we will concentrate on the SD-card as an external and expandable data storage medium. The distinction between internal and external storage, at least on Android is a holdover from the early days of the platform when a device would include a small amount of internal storage plus external expandable storage. Modern devices now commonly incorporate sufficient internal memory that expandable storage is not as critically important as it used to be. Despite this, even if an Android device does not have expandable storage then it will likely have the internal storage devided, or partitioned, into two parts, ``internal'' and ``external''.
+
+\paragraph{} It should be noted however that Apple does not offer expandable storage on any of their iOS devices.
+
+
+\section{Databases}
+\paragraph{}
+
+\section{Summary}
+\paragraph{}
+
+\section{References \& Resources}
+\paragraph{}
+
