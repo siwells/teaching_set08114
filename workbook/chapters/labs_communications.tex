@@ -1,0 +1,207 @@
+\section{Aims}
+\paragraph{} At the end of the practical portion of this topic you will be able to:
+
+\begin{itemize}
+\item Use SMS Messaging
+\item Send Email using Intents
+\end{itemize}
+
+\section{SMS Messaging}
+\paragraph{} In this part of the practical we will work with SMS functionality. Firstly, to send a basic SMS message, then adding functionality to check that the SMS was sent correctly, then using an Intent to invoke the built-in message app on your Android device. Finally we shall look at receiving SMS messages and how to deal with them. In many cases your app might be in the background when an SMS is received so we need to deal with that situation.
+
+
+\subsection{Testing SMS Sending \& Receiving (using multiple AVDs)}
+\paragraph{} You can start up multiple AVDs (this might take a while depending upon your host machine) then send SMS messages between them. Try it out using the built in SMS app, use the four digits in the AVD title bar, e.g. 5554, 5556, \&c., which are the port number of the AVD as the telephone number to send the SMS to. If you send a message from one AVD to another then the recipient will get an SMS from a longer number than just the port number. Don't worry about it. You can use either the longer or the shorter number to send and receive texts between the AVDs.
+
+\subsection{Sending SMS Messages}
+\paragraph{} For this part of the practical we will write a small app that sends an SMS message when we click a button on our app's interface. Create a new Android project. First things first, in order to send an SMS message we need to give our app permission to do so. We need to add a permission line to the app's AndroidManifest.xml file:
+
+\begin{lstlisting}
+    <uses-permission android:name="android.permission.SEND_SMS"/>
+\end{lstlisting}
+
+\paragraph{} We also need to add a string resource to our strings.xml to store the text of our button in the UI:
+
+\begin{lstlisting}
+    <string name="send_sms">SEND SMS</string>
+\end{lstlisting}
+
+\paragraph{} Now we can construct our layout in acivtiy\_main.xml which means we delete the `Hello World' TextView and add a LinearLayout which holds a Button view:
+
+\begin{lstlisting}
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/send_sms"
+            android:id="@+id/btn1"
+            android:layout_gravity="center_horizontal" />
+    </LinearLayout>
+</RelativeLayout>
+\end{lstlisting}
+
+\paragraph{} Now we have arranged the preliminaries we can get on with the actual code to send the SMS. This involves setting up a click handler in the onCreate method of our MainActivity class and adding a new method to send the SMS message when the user clicks on our button. Our MainActivity.java should end up looking something similar to this:
+
+\begin{lstlisting}
+package org.simonwells.testsms;
+
+import android.support.v7.app.ActionBarActivity;
+import android.os.Bundle;
+import android.telephony.SmsManager;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+
+
+public class MainActivity extends ActionBarActivity {
+
+    Button btn1;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        btn1 = (Button) findViewById(R.id.btn1);
+        btn1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendSMS("5556", "Hello Napier");
+            }
+        });
+    }
+
+    private void sendSMS(String phoneNumber, String message)
+    {
+        SmsManager sms = SmsManager.getDefault();
+        sms.sendTextMessage(phoneNumber, null, message, null, null);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+}
+\end{lstlisting}
+
+\section{Sending Email}
+\paragraph{} Android supports sending email. In this example we will build an app that uses an Intent to launch the email app on your Android device and prefill the fields for a new email to send. However, to send email assumes that you, as the owner of the device, have already set up either a POP3 or IMAP email account.
+
+\paragraph{} Create a new Android project, delete the `Hello World' TextView, add a Vertical LinearLayout to activity\_mail.xml and then add a button to the LinearLayout. We are now going to use the button to initiate sending the email so we also need to edit MainActivity.java to add a click handler for the button which should look similar to the following:
+
+\begin{lstlisting}
+package org.simonwells.testemailintent;
+
+import android.content.Intent;
+import android.net.Uri;
+import android.support.v7.app.ActionBarActivity;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+
+public class MainActivity extends ActionBarActivity {
+
+    Button btnSendEmail;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        btnSendEmail = (Button) findViewById(R.id.btnSendEmail);
+        btnSendEmail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String[] to = {"s.wells@napier.ac.uk", "napier@simonwells.org"};
+                String[] cc = {"siwells@gmail.com"};
+                sendEmail(to, cc, "Hello", "Hello Napier!");
+            }
+        });
+    }
+
+    private void sendEmail(String[] emailAddresses,
+        String[] carbonCopies, String subject, String message)
+    {
+        Intent emailIntent = new Intent(Intent.ACTION_SEND);
+        emailIntent.setData(Uri.parse("maileto:"));
+        String[] to = emailAddresses;
+        String[] cc = carbonCopies;
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, to);
+        emailIntent.putExtra(Intent.EXTRA_CC, cc);
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
+        emailIntent.putExtra(Intent.EXTRA_TEXT, message);
+        emailIntent.setType("message/rfc822");
+        startActivity(Intent.createChooser(emailIntent, "Email"));
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+}
+\end{lstlisting}
+
+\paragraph{} Notice that our click handler mainly collects the data for the email then passes it all as arguments to the sendEmail method which creates the Intent.
+
+
+\section{Summary}
+\paragraph{} In this practical we have 
+
+\begin{itemize}
+\item Use SMS Messaging
+\item Send Email using Intents
+\end{itemize}
+
+
