@@ -1,0 +1,262 @@
+\chapter{Sensing}
+\section{Aims}
+\paragraph{} At the end of the practical portion of this topic you will be able to:
+
+\begin{itemize}
+\item Use GPS \& the Android location API to find \& work with your location
+\item Use the Android sensor API
+\end{itemize}
+
+\section{GPS}
+\paragraph{} To access the GPS hardware we need to add a permission to our Android Manifest. Create a new Android project and delete the `Hello World' TextView. Open the AndroidManifest.xml file and add the following line:
+
+\begin{lstlisting}
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+\end{lstlisting}
+
+\paragraph{} between the $<$manifest ....$>$ $<$/manifest$>$ tags, e.g.
+
+\begin{lstlisting}
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.simonwells.testgps" >
+
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>
+\end{lstlisting}
+
+\paragraph{} To actually use this we need two things. First, some Java code in our app to retrieve and do something with the GPS data, and secondly, to supply some GPS data to our app. Let's start with the code then mess with the data later. All we are going to do is create a LocationListener that controls doing something with GPS data when we recieve it, and a LocationManager to call the LocationListener when there is GPS data. Both LocationListener and LocationManager are part of the Android libraries so we will need to import those (along with some supplementary classes like Toasts and Contexts to help us). These are changes to our java code so we need to edit MainActivity.java and afterwards it should look something like this:
+
+\begin{lstlisting}
+package org.simonwells.testgps;
+
+import android.content.Context;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.support.v7.app.ActionBarActivity;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.Toast;
+
+
+public class MainActivity extends ActionBarActivity {
+
+    LocationManager locationManager = null;
+    LocationListener locationListener = null;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+
+        locationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                if (location != null) {
+                    String locationStr = "Location changed. Lat: " +
+                            location.getLatitude() + " lon: " + location.getLongitude();
+
+                    Toast.makeText(getBaseContext(), locationStr, Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+
+            }
+        };
+
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        locationManager.removeUpdates(locationListener);
+        String status = locationManager.toString();
+        Toast.makeText(getApplicationContext(), status, Toast.LENGTH_SHORT).show();
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+}
+\end{lstlisting}
+
+\paragraph{} Notice in this case that we have declared the variables to store our location Manager and location listener in our MainActivity class. This is so that we can reference those variables in places besides the onCreate method. For example, we want our app to stop listening for GPS data when our activity loses visibility so we have implement an onPause method which removes our location listener from the location manager. You should consider the other methods that make up the activity lifecycle if you want to resume GPS tracing when the app is made visible again.
+
+\paragraph{} Supplying data is straightforward if you are using a hardware device, just turn on GPS and ensure that you are somewhere where you can receive GPS signals (e.g. outside). If you are using the AVD to emulate a hardware device then you need to use the AVD controls from within your IDE (either within Android Studio or Eclipse) to inject fake GPS data into the running AVD. To do this we need to introduce ourselves to another tool from the Android SDK, the Dalvik Debug Monitor Service (DDMS) which is available in Eclipse by going to Window $>$ Open Perspective $>$ DDMS. To exit the DDMS to edit code again then you can go to Window $>$ Close Perspective. In the DDMS selectthe Emulator tab and you should see a `Location Controls' section in which you can set a Latitude or Longitude value and a `send' button to send the coordinates to the AVD.
+
+\paragraph{} You can use Google Maps to retrieve the coordinates of a given location by right-clicking on the map and selecting `what's here?'. The coordinates will then be displayed in a box along with the street address. You can copy these coordinates and supply them to your AVD via the DDMS if you want to test specific locations for your app.
+
+%\section{Location API}
+%\paragraph{}
+
+\section{Sensors}
+\paragraph{} The Android platform supports many sensors. These include motion, enivronmental, and position sensors. In this practical we shall use the accelerometer, but the basic principles for using sensors in your app are the same. Also it is important to notice that whilst you can write an app that uses sensors you must either use hardware that includes your target sensor to test it, or else use a third party tool such as the Open Intents Sensor Simulator\footnote{\url{https://code.google.com/p/openintents/wiki/SensorSimulator}} to supply simulated sensor data to the Android AVD.
+
+\paragraph{} Let's get started. We are going to write some Java code that uses the android.hardware.Sensor libraries to check what sensors are available then to retrieve a handle for the accelerometer. We are then going to use a SensorEventListener to do something with the accelerometer data each time the listener hears an update.
+
+\paragraph{} Create a new Android project and delete the `Hello World' TextView. We are not going to use any other views or layout elements in this pracical, just Toasts to output our data in the easiest way possible. You can however use this practical as a building block to integrate sensor data with a more advanced UI.
+
+\paragraph{} Your MainActivity.java should end up looking something like this (it's a lot of code but we shall go through it over the next few paragraphs):
+
+\begin{lstlisting}
+package org.simonwells.testsensors;
+
+import android.content.Context;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.support.v7.app.ActionBarActivity;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.Toast;
+
+public class MainActivity extends ActionBarActivity {
+
+    private long lastUpdate = 0;
+    private float last_x, last_y, last_z = 0;
+    private static final int SHAKE_THRESHOLD = 600;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        SensorManager mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        Sensor sensorAccel;
+
+        if (mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null) {
+            Toast.makeText(getBaseContext(), "HAS ACCELEROMETER", Toast.LENGTH_LONG).show();
+
+            sensorAccel = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+            mSensorManager.registerListener(new SensorEventListener() {
+                @Override
+                public void onSensorChanged(SensorEvent event) {
+                    Sensor localSensor = event.sensor;
+
+                    if (localSensor.getType() == Sensor.TYPE_ACCELEROMETER){
+                        float x = event.values[0];
+                        float y = event.values[1];
+                        float z = event.values[2];
+
+                        long curTime = System.currentTimeMillis();
+
+                        if ((curTime - lastUpdate) > 100)
+                        {
+                            long diffTime = (curTime - lastUpdate);
+                            lastUpdate = curTime;
+
+                            float speed = Math.abs(x + y + z - last_x - last_y - last_z)/ diffTime * 10000;
+
+                            if (speed > SHAKE_THRESHOLD)
+                            {
+                                String str = String.valueOf(x) + String.valueOf(y) + String.valueOf(z);
+                                Toast.makeText(getBaseContext(), str, Toast.LENGTH_SHORT).show();
+                            }
+                            last_x = x;
+                            last_y = y;
+                            last_z = z;
+                        }
+                    }
+                }
+
+                @Override
+                public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+                }
+            }, sensorAccel, SensorManager.SENSOR_DELAY_NORMAL);
+
+        }
+        else
+            Toast.makeText(getBaseContext(), "NOPE",Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+}
+\end{lstlisting}
+
+\paragraph{} In the MainActivity class we have created some private variables, e.g. lastUpdate, last\_x, last\_y, last\_z, and SHAKE\_THRESHOLD, that we will use later in the various methods and listeners that we implement. All our other edis are in the OnCreate method where we have created a SensorManager\footnote{\url{http://developer.android.com/reference/android/hardware/SensorManager.html}} and a Sensor\footnote{\url{http://developer.android.com/reference/android/hardware/Sensor.html}} object. There are a lot of sensor types available, including the accelerometer (TYPE\_ACCELEROMETER), thermometer (TYPE\_AMBIENT\_TEMPERATURE), gyroscope (TYPE\_GYROSCOPE), magnetometer (TYPE\_MAGNETIC\_FIELD), and many others. Check out the Android sensor documentation linked in the footnotes for details of the full list of types that are currently supported. Obviously you can only actually use those sensors that your hardware includes when running your app.
+\paragraph{} The SensorManager is used to get access to the sensors supported by the hardware on which our app is running, and access to these is provided by the Android system. We first use the SensorManager to check whether an accelerometer exists then, if it does, we use the SensorManager to get a reference to the accelerometer sensor so that we can use it. Notice that we have used a Toast to give quick output to say whether the accelerometer is available or not. Once we have a reference to the accelerometer sensor we then create and register a new SensorEventListener for it. We have then overriden the base methods for onSensorChanged and onAccuracyChanged, both of which we are required to deal with to use this kind of listener. However, we are only going to deal with detected sensor changes so we only add some code to the onSensorChanged method for now. The important part to notice of onSensorChanged is the assignements of x, y, and z values from the supplied event into local float variables. The accelerometer works in three dimensions so we get a value supplied to us for each dimension. The code for the rest of this method is purely to do something with the supplied x, y, and z values. Basically, make sure that the last update was at least 100 milliseconds agothen determine how much the sensor has moved, our {\emph{speed}}, sinse the last detection. If the  speed is greated than our threshold then we assemble a string and display it using a Toast.
+
+\section{Summary}
+\paragraph{} In this practical we have 
+
+\begin{itemize}
+\item Used GPS \& the Android location API to find \& work with our location
+\item Used the Android sensor API to work with the accelerometer sensor
+\end{itemize}
+
+
