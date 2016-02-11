@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">MultiColourButtons</string>
+    <string name="red">RED</string>
+    <string name="green">GREEN</string>
+    <string name="blue">BLUE</string>
+</resources>
