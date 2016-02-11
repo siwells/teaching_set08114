@@ -1,0 +1,461 @@
+\section{Aims}
+\paragraph{} At the end of the practical portion of this topic you will be able to:
+
+\begin{itemize}
+\item Draw with 2D Graphics
+\end{itemize}
+
+\section{Drawing with 2D Graphics}
+\paragraph{} Android provides a 2 Dimensional (2D) drawing API which you can use to create your own graphics. In the next few examples we will create a new custom view which we will draw onto. After that we will learn to draw shapes onto our view, then finally we will look at interacting with the view.
+
+\subsection{Using Views to create a canvas for drawing on}
+\paragraph{} Create a new Android project and delete the `Hello World' TextView. What we are going to do now is to create a new Java class that extends the View class, named `Panel' (stored in a new file called Panel.java) then we are going to tell our MainActivity class to use this new Panel instead of the usual layout. Let's take a look at Panel.java then move on to MainActivity.java
+
+\begin{lstlisting}
+package org.simonwells.graphicsviews;
+
+import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.util.AttributeSet;
+import android.view.View;
+
+public class Panel extends View {
+    public Panel(Context context) { super(context); }
+    public Panel(Context context, AttributeSet attrs) { super(context, attrs); }
+    public Panel(Context context, AttributeSet attrs, int defStyle) { super(context, attrs, defStyle); }
+
+    @Override
+    protected void onDraw(Canvas canvas) { canvas.drawColor(Color.RED); }
+}
+\end{lstlisting}
+
+\paragraph{} All we have done is create a new file, Panel.java, which extends the View class. We implement three different constructors, which lets us use this new view in different ways, and we override the onDraw method. We pass a canvas into onDraw and set the drawColor to red. The canvas documentation will tell you much more about the features that the canvas offers \footnote{\url{http://developer.android.com/reference/android/graphics/Canvas.html}}. Now let's use that Panel class in MainActivity.java
+
+\begin{lstlisting}
+package org.simonwells.graphicsviews;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.view.Window;
+
+public class MainActivity extends Activity {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        setContentView(new Panel(this));
+    }
+}
+\end{lstlisting}
+
+\paragraph{} Notice that we have changed the class that we extend or MainActivity from to the base Activity and we have deleted the other menu methods and imports that were no longer required.
+
+\subsection{Drawing shapes on our canvas}
+\paragraph{} Our panel's onDraw method uses a canvas which we can draw any number of things onto. Create a new Android project and set it up with the Panel.java file as we did in the last exercise. Now, we can edit this to draw some shapes on the canvas. Our Panel.java should look something similar to the following:
+
+\begin{lstlisting}
+package org.simonwells.graphicsdrawshapes;
+
+import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.util.AttributeSet;
+import android.view.View;
+
+public class Panel extends View {
+    public Panel(Context context) { super(context); }
+    public Panel(Context context, AttributeSet attrs) { super(context, attrs); }
+    public Panel(Context context, AttributeSet attrs, int defStyle) { super(context, attrs, defStyle); }
+
+    @Override
+    protected void onDraw(Canvas canvas)
+    {
+        canvas.drawColor(Color.BLACK);
+
+        Paint paint = new Paint();
+
+        paint.setColor(Color.WHITE);
+        canvas.drawCircle(100, 100, 20, paint);
+
+        paint.setColor(Color.RED);
+        canvas.drawRect(125, 125, 200, 200, paint);
+
+        paint.setColor(Color.GREEN);
+        canvas.drawLine(10, 10, 75, 250, paint);
+
+        paint.setColor(Color.YELLOW);
+        canvas.drawText("HELLO NAPIER", 10, 200, paint);
+    }
+}
+\end{lstlisting}
+
+\paragraph{} Try it out. Experiment with various values that are passed as arguments in the drawCircle, drawRect, drawLine, and drawText methods. Take a look at the Canvas documentation\footnote{\url{http://developer.android.com/reference/android/graphics/Canvas.html}} and experiment with some of the other drawing methods that Canvas supports. Try the following:
+
+\begin{enumerate}
+\item Create an app that draws your name on screen using lines (or other shapes)
+\item Create an app that divides into four different colours areas (you might want to investigate the drawRect() method to achieve this)
+\end{enumerate}
+
+\subsection{Drawing images on our canvas}
+\paragraph{} If we want to make games then we might want to draw bitmaps to screen instead of handcoding our graphics drawing using primitive shapes. The Android API provides methods to do this. Modify your on draw as follows:
+
+\begin{lstlisting}
+package org.simonwells.graphicsdrawimages;
+
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.util.AttributeSet;
+import android.view.View;
+
+public class Panel extends View {
+    public Panel(Context context) { super(context); }
+    public Panel(Context context, AttributeSet attrs) { super(context, attrs); }
+    public Panel(Context context, AttributeSet attrs, int defStyle) { super(context, attrs, defStyle); }
+
+    @Override
+    protected void onDraw(Canvas canvas)
+    {
+        canvas.drawColor(Color.BLACK);
+        Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
+        canvas.drawBitmap(bm, 10, 10, null);
+    }
+}
+\end{lstlisting}
+
+\paragraph{} Although we can draw on screen using this extension of the basic View class, we can't interact with it. For that we need to look at SurfaceViews.
+
+\subsection{Drawing with SurfaceViews \& Handling Events}
+\paragraph{} To draw with a SurfaceView we are going to use a slightly different version of the Panel class we used before and we also need a GraphicsThread class to control drawing our panel in an alternative {\emph{thread}} of execution. The idea is to give ourselves a mechanism that will allow us to handle any incoming events while still letting the application operate. A Thread is a programming construct that allows us to have multiple pieces of code running concurrently (at the same time). This allows us to handle any incoming events into the application, such as touch events, without having the game stop and wait for the vent to complete. Thread programming is an important, and complex, topic. For the moment all you need to realise is that the GraphicsThread will constantly be running(executing the run method) while the rest of the application is free to operate as normal.
+
+\paragraph{} So let's start by creating a new Android project. Add a new class called Panel.java and one called GraphicsThread.java. 
+
+\paragraph{} Luckily our GraphicsThread.java is a little shorter:
+
+\begin{lstlisting}
+package org.simonwells.graphicssurfaceviews;
+
+import android.view.SurfaceHolder;
+
+public class GraphicsThread extends Thread
+{
+    private SurfaceHolder surfaceHolder;
+    private Panel panel;
+    private boolean run = false;
+
+    public GraphicsThread(SurfaceHolder surfaceHolder, Panel panel)
+    {
+        this.surfaceHolder = surfaceHolder;
+        this.panel = panel;
+    }
+
+    public void setRunning(boolean value)
+    {
+        this.run = value;
+    }
+
+    @Override
+    public void run() {}
+}
+\end{lstlisting}
+
+\paragraph{} Now we need to add a GraphicsThread to our Panel class, modify the Panel class as shown below.
+
+\begin{lstlisting}
+package org.simonwells.graphicssurfaceviews;
+
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.util.AttributeSet;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
+
+public class Panel extends SurfaceView implements SurfaceHolder.Callback{
+    private GraphicsThread thread;
+    Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
+
+    public Panel(Context context)
+    {
+        super(context);
+        getHolder().addCallback(this);
+        this.thread = new GraphicsThread(getHolder(), this);
+    }
+
+    public Panel(Context context, AttributeSet attrs)
+    {
+        super(context, attrs);
+        getHolder().addCallback(this);
+        this.thread = new GraphicsThread(getHolder(), this);
+    }
+
+    public Panel(Context context, AttributeSet attrs, int defStyle)
+    {
+        super(context, attrs, defStyle);
+        getHolder().addCallback(this);
+        this.thread = new GraphicsThread(getHolder(), this);
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas)
+    {
+        if(canvas != null)
+        {
+            canvas.drawColor(Color.RED);
+            canvas.drawBitmap(bm, 10, 10, null);
+            getHolder().unlockCanvasAndPost(canvas);
+        }
+    }
+
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {}
+
+    public void surfaceCreated(SurfaceHolder holder)
+    {
+        this.draw(holder.lockCanvas());
+        thread.setRunning(true);
+        thread.start();
+    }
+
+    public void surfaceDestroyed(SurfaceHolder holder)
+    {
+        boolean retry = true;
+        thread.setRunning(false);
+
+        while(retry)
+        {
+            try
+            {
+                thread.join();
+                retry = false;
+            }
+            catch (InterruptedException e) {}
+        }
+    }
+}
+\end{lstlisting}
+
+\paragraph{} This adds a GraphicsThread to our panel and initialises it during the constructor. Remember to update all the constructors in the same way.
+In the surfaceCreated method the thread running attribute is set to true and the thread is started. The surfaceDestroyed method is more complex. Here we are trying to get the GraphicsThread to stop drawing the surface, first we set running to false and then we try and join the thread (joining a Thread means wait until it is completed). When the thread has completed its work, we will continue and therefore end the application. If the Thread cannot be joined it will throw an exception which we catch and then retry joining the Thread. Now the Panel has been setup we can modify the GraphicsThread run method so that the Panel is drawn to constantly. Modify the run method of the GraphicsThread class to the following. This will loop constantly while the run attribute is true, hence why we set run to false when stopping the thread. We access the canvas of the panel and synchronise the surfaceHolder, ensuing that only the GraphicsThread can assess the canvas at this point. Then we call the onDraw() method of the panel using the canvas. This means the canvas will repeatedly be drawn to.
+Now all we need to do is start the Thread when the application is created. To do this we need to implement the surfaceCreated and surfaceDestroyed methods. 
+
+
+\paragraph{} Finally we need our MainActivity.java (which is actually identical to the one we used earlier for our first version of the Panel.java
+
+\begin{lstlisting}
+package org.simonwells.graphicssurfaceviews;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.view.Window;
+
+
+public class MainActivity extends Activity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        setContentView(new Panel(this));
+    }
+}
+\end{lstlisting}
+
+\paragraph{} Now when we run our app we should see the red background and the Android droid bitmap image that we used before.
+
+
+\subsection{Responding to user interaction}
+\paragraph{} Again though, our solution was static. We need to use that drawing thread to create an animation loop and we need to detect events. Then, within that loop, we need to do something to respond to the events. That is what we shall do in this final part of the practical. We shall handle touch events then update the screen by moving the bitmap to the last location that we touched.
+
+\paragraph{} For this we need to alter some of the code from last time. Our GraphicsThread.java should now look something like this:
+
+\begin{lstlisting}
+package org.simonwells.graphicsinteraction;
+
+import android.graphics.Canvas;
+import android.view.SurfaceHolder;
+
+public class GraphicsThread extends Thread
+{
+    private SurfaceHolder surfaceHolder;
+    private Panel panel;
+    private boolean run = false;
+
+    public GraphicsThread(SurfaceHolder surfaceHolder, Panel panel)
+    {
+        this.surfaceHolder = surfaceHolder;
+        this.panel = panel;
+    }
+
+    public void setRunning(boolean value)
+    {
+        this.run = value;
+    }
+
+    @Override
+    public void run()
+    {
+        while(run)
+        {
+            Canvas canvas = null;
+
+            try
+            {
+                canvas = surfaceHolder.lockCanvas();
+                synchronized (surfaceHolder)
+                {
+                    panel.draw(canvas);
+                }
+            }
+            catch (Exception e) {}
+        }
+    }
+}
+\end{lstlisting}
+
+\paragraph{} Our Panel.java should look something like this (Notice the onTouchEvent method):
+
+\begin{lstlisting}
+package org.simonwells.graphicsinteraction;
+
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.util.AttributeSet;
+import android.view.MotionEvent;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
+
+public class Panel extends SurfaceView implements SurfaceHolder.Callback{
+    private GraphicsThread thread;
+    private int currentX = 100;
+    private int currentY = 100;
+    Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
+
+    public Panel(Context context)
+    {
+        super(context);
+        getHolder().addCallback(this);
+        this.thread = new GraphicsThread(getHolder(), this);
+        setFocusable(true);
+    }
+
+    public Panel(Context context, AttributeSet attrs)
+    {
+        super(context, attrs);
+        getHolder().addCallback(this);
+        this.thread = new GraphicsThread(getHolder(), this);
+        setFocusable(true);
+    }
+
+    public Panel(Context context, AttributeSet attrs, int defStyle)
+    {
+        super(context, attrs, defStyle);
+        getHolder().addCallback(this);
+        this.thread = new GraphicsThread(getHolder(), this);
+        setFocusable(true);
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas)
+    {
+        if(canvas != null)
+        {
+            canvas.drawColor(Color.RED);
+            canvas.drawBitmap(bm, currentX, currentY, null);
+            getHolder().unlockCanvasAndPost(canvas);
+        }
+    }
+
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {}
+
+    public void surfaceCreated(SurfaceHolder holder)
+    {
+        this.draw(holder.lockCanvas());
+        thread.setRunning(true);
+        thread.start();
+    }
+
+    public void surfaceDestroyed(SurfaceHolder holder)
+    {
+        boolean retry = true;
+        thread.setRunning(false);
+
+        while(retry)
+        {
+            try
+            {
+                thread.join();
+                retry = false;
+            }
+            catch (InterruptedException e) {}
+        }
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event)
+    {
+        currentX = (int) event.getX();
+        currentY = (int) event.getY();
+        return super.onTouchEvent(event);
+    }
+}
+\end{lstlisting}
+
+\paragraph{} Finally, for completeness sake because we haven't made any changes, our MainActivity.java should look something like this:
+
+\begin{lstlisting}
+package org.simonwells.graphicsinteraction;
+
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.view.Window;
+
+public class MainActivity extends Activity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        setContentView(new Panel(this));
+    }
+}
+\end{lstlisting}
+
+\paragraph{} If you notice that the bitmap is not placed exactly where we touched, this is due to the dimensions of the bitmap. We can adjust the coordinates of our touch detection to account for the dimensions of the bitmap. To do this we need to add two new variables to the Panel class, immediately after the call to BitmapFactory, as follows:
+
+\begin{lstlisting}
+    private int bm_x_center = (bm.getWidth() / 2);
+    private int bm_y_center = (bm.getHeight() / 2);
+\end{lstlisting}
+
+\paragraph{} All this does is store the offset for the center of the bitmap, half the x and y dimensions, into a pair of variables. Now we can use those in our code. For demonstration purposes I have added it to the onTouchEvent method as follows:
+
+\begin{lstlisting}
+    @Override
+    public boolean onTouchEvent(MotionEvent event)
+    {
+        currentX = (int) event.getX() - bm_x_center;
+        currentY = (int) event.getY() - bm_y_center;
+        return super.onTouchEvent(event);
+    }
+\end{lstlisting}
+
+\paragraph{} You should now be able to see how you can draw some basic animation into your app, if required, and also how a basic animation loop can be integrated with touch events. Essentially, we have the outline of a very basic game loop.
+
+\section{Summary}
+\paragraph{} In this practical we have learnt to:
+
+\begin{itemize}
+\item Draw with 2D Graphics
+\end{itemize}
+
+
