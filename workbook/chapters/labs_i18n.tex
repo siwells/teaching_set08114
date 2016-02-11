@@ -1,0 +1,75 @@
+\chapter{Internationalization}
+
+\section{Aims}
+\paragraph{} At the end of the practical portion of this topic you will be able to:
+
+\begin{itemize}
+\item use Android resources to localize our apps 
+\end{itemize}
+
+\section{Localization}
+\paragraph{} In one sense, localization\footnote{The Android documentation has some extra background on this topic here: \url{http://developer.android.com/guide/topics/resources/localization.html}} is actually quite straightforward to implement on the Android platform, especially if you have planned ahead when designing your application.
+
+\paragraph{} In this practical we will be creating an app that displays a page of text and which will show the text in other languages based upon the locale that Android is set to use. The locale is the system wide language setting for the Android platform and it is this which is the primary determinant of which language your app is displayed in.
+
+\paragraph{} However, this assumes that you have included resources in your app that correspond to the locale which is set in Android. If there are no resources available in the target language then the default resources get loaded, e.g. the contents of strings.xml
+
+\paragraph{} Briefly, localization involves two aspects. The first is the resonsibility of the developer. For anything that you want to display differently based upon locale, you must create resources specific to that locale, otherwise those resources will be displayed using the default. The second aspect involves the user of your app. They must set their locale or language to whatever they desire and run your application. At this point, assuming that the users locale matches one supplied in your app, a localized version of your app will be displayed.
+
+\paragraph{} The process of providing localization is straightforward. You merely need a resource file for each target language provided in the res/folder. By default you will have a res/values/strings.xml file which will probably contain the resources for your app in the English language. To provide a French translation is straightforward and require only a new folder called values-fr to be created in your res folder. Into this is placed a copy of strings.xml in which each string has been translated into the target language.
+
+\paragraph{} Lets do this then. Create a new app called LocaleTest. By default we have an app that says Hello World when we run it and whose res/values/strings.xml file contains the following:
+
+\begin{lstlisting}
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">LocaleTest</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+
+</resources>
+\end{lstlisting}
+
+Now, lets create a French translation of our app. We need to create a new folder in res/ called values-fr. Notice that a two letter country code is used to indicate which language is contained in this new resource collection. Copy your existing strings.xml file into res/values-fr then edit it so that it appears as follows:
+
+\begin{lstlisting}
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">LocaleTest</string>
+    <string name="hello_world">Bonjour Le Monde!</string>
+    <string name="action_settings">Paramètres</string>
+
+</resources>
+\end{lstlisting}
+
+\section{Partial Translations}
+\paragraph{} When you changed the locale setting there were many versions of the same language, this is due to the different dialects used in different regions. If you were translating this application for use in the United States you would have to change the spelling of a few words but not all, so recreating the whole strings file, especially for a larger application, would be unnecessary and time consuming. Android has taken this into consideration and allows you to pick and choose which strings get changed for specific regions.
+
+\paragraph{} Create a new folder in the “res” folder called “values-en-rUS” this is the American-English code, the ``r'' before the region code of “US” informs android that there may be missing values and to use the default values instead. Now add some strings to your default strings.xml, with TextViews to display them, that use British-English spellings then add string translations for only the American-English words. For example:
+
+\begin{itemize}
+\item A lorry is a slimmer truck.
+\item A lift is an elevator.
+\item A fortnight is two weeks.
+\item A dual carriageway is a freeway
+\end{itemize}
+
+\section{Challenge}
+
+\paragraph{1} The codes after the folder names are not just for changing the language, they can also be used to change the layout or other resources used throughout the application, there are also codes for different device types.
+Download a some flag images, Google images is a good place to start and see if your can get the flag for the appropriate country to display when you change the locale settings.
+
+\paragraph{2} Next create a new virtual device, try a large one used by a tablet device, and create a new layout for large layouts.
+
+
+
+\section{Summary}
+\paragraph{} In this practical we have 
+
+\begin{itemize}
+\item learnt to use Android resources to localize our apps 
+\end{itemize}
+
+
