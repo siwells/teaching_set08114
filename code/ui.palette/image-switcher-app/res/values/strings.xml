@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">ImageSwitcher</string>
+    <string name="image_switch_btn_text">Switch Images</string>
+</resources>
