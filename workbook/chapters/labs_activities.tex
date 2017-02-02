@@ -9,260 +9,259 @@
 \end{itemize}
 
 \section{Activities}
-\paragraph{} We will start the lab by working with activities. Remember that an activity is essentially a window that contains some user interface elements and that an app can have zero or more activities. In HelloAndroid we got a single activity by default that we used to display some views. However, using multiple activities and switching between them can be a useful way to organise your app if you want your user to navigate between multiple screens. So in this part of the lab we will look at creating activities, displaying them, and navigating between them.
+\paragraph{} We will start the lab by working with activities. The Android project defines an Activity as a ``single, focused thing that the user can do''. This can mean quite a few things but for out purposes at this stage we will consider an activity as essentially a single screen of an Android app that probably contains some user interface elements to enable interaction. An app can have zero or more activities, but usually we will be dealing with at least one activity. When we go through the wizard to create a new Android project, a single default empty activity is created for us, and, in the previous chapters, we have added things to this activity, like buttons for user interaction, but we haven't moved to a different screen, that is we haven't switched to a different activity (mainly because we only have the one available to us). In HelloAndroid we got a single activity by default that we used to display some views. However, using multiple activities and switching between them can be a useful way to organise your app if you want your user to navigate between multiple screens. So in this part of the lab we will look at creating activities, displaying them, and navigating between them.
 
+\subsection{What do we have?}
+\paragraph{} When we create an Android Activity with an empty activity\footnote{If you're on an older version of Android studio or using an older API level or SDK then this might be referred to as a ``Blank'' Activity. These are essentially the same. Note however that if you choose a ``Basic'' Activity then extra code that you might not necessarily use will be generated for you.} we get some code generated for us. There are some things to be aware of here:
 
-\subsection{Creating}
-\paragraph{} Creating new activities is straightforward if you are working in Android Studio as it provides helper wizards to add the new code for you. For example, if in the studio interface you right click on the app folder in the project explorer then select ``New'' $>$ ``Activity'' $>$ ``Blank Activity'' and call it `MainActivity2' then studio will add in the necessary code to support your new MainActivity2. This includes a java src file called `MainActivity2.java', an XML activity file called `activity\_main\_activity2.xml', an entry in the AndroidManifest.xml file, and an entry in the strings.xml file.
-
-\paragraph{} But to really get a feel for what is happening we need to do the job by hand. Create a new android project and test that it runs. Add a new Java src file called MainActivity2.java into the same directory as MainActivity.java and edit it as follows:
+\begin{itemize}
+\item The empty activity created by the wizard contains a Java file and an XML file. The XML file describes the ``view'', the way that the screen made visible to the user should look. The Java file then contains code to actually perform tasks related to that view. For example, if your view, that is your XML file, contains a description for a  button, then your Java file must contain some code that does something when the button is clicked. Of course the Java file can contain code that does much more, pretty much anything that you can do in the Java language, but let's keep things simple for now, or at least as simple as the Android platform will allow us. An entire, default, boilerplate AppCompatActivity Java file looks like this:
 
 \begin{lstlisting}
-package org.simonwells.multipleactivities1;
 
-import android.support.v7.app.ActionBarActivity;
+package org.simonwells.testapp;
+
+import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 
-
-public class MainActivity2 extends ActionBarActivity {
+public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
     }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 }
 \end{lstlisting}
-\paragraph{} Compare the code in MainActivity.java to that in MainActivity2.java, how do they differ? What does this tell you?
 
-\paragraph{} Now create a corresponding layout for MainActivity2. In res/layout create a new xml file called `activity\_main2.xml' and edit it as follows:
+and the corresponding XML file for the default, corresponding layout looks like this:
 
 \begin{lstlisting}
+<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity">
+    tools:context="org.simonwells.testapp.MainActivity">
 
-    <TextView android:text="@string/activity2_name" android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hello World!" />
 </RelativeLayout>
 \end{lstlisting}
 
-\paragraph{} Again, compare activity\_main2.xml to activity\_main.xml and notice the differences between them. Why do you think we did this? Actually, in this case we could have kept the layout file identical but we need a way to differentiate between them once they run, that is why the text references a different string resource.
 
-\paragraph{} That is the bulk of the work necessary to create a new activity. However we are not quite ready to run out app yet. Open strings.xml and add the following to it:
 
-\begin{lstlisting}
-<string name="activity2_name">ACTIVITY TWO!!!!???!!</string>
-\end{lstlisting}
-
-\paragraph{} Now open you AndroidManifest.xml and add the following below the existing </activity>:
+\item Generally an Empty Activity will contain a Java class that \emph{inherits} from the Activity base class. This is a technical term from object oriented programming that means that we have taken a basic \emph{template} for some code, then added some new stuff to the template to create a child and that the child gets all the code from the parent plus the new added code that make it into a child. Note however that in our Java file it says
 
 \begin{lstlisting}
-        <activity
-            android:name=".MainActivity2"
-            android:label="@string/app_name" >
-        </activity>
+    public class MainActivity extends AppCompatActivity {
 \end{lstlisting}
 
-\paragraph{} Your AndroidManifest.xml should now look like this:
+This means that our specific Activity is a child of the Activity base class and our child class is called AppCompatActivity. This is an Activity that adds extra features to the base class to support different functionality. In this specific case, AppCompatActivity adds support for the Action Bar. The Action bar is that part of an Android app at the top of the screen that usually holds buttons and important actions that you need throughout your app. The Action Bar usually includes some, but not necessarily all of the following: an App Icon, a control for changing the view, action buttons for the most important interactions with your app, and an overflow menu for further, less frequently used actions.
+
+\item There are many different activities available. For the most part we will only use the Empty (or Blank) Activity initially. Although during your coursework you might choose to use other Activities in your implementation, but that is a design decision for you to make. That said, there are also ``Basic'' Activities, which support Fragments,a way to organise your screen into smaller logical parts so that you can more easily control how your app's widgets are displayed and organised across different devices, ``Fullscreen'' Activities, useful if you want to use every part of the device's display, and other Activities that are pre-filled with skeleton code to do specific tasks. For example, there are Activities that support Google Maps integration, use of navigation drawers, and many other things. Investigate the various Activities and compare the differences between them. The easiest way to do this is to create new Android Studio projects and select different Activities from the ``Add Activity'' page of the wizard. Mostly you will find that the different types of Activity are just Activities, i.e. they inherit from the Activity base class\footnote{The JavaDoc for the Activity base class is here: \url{https://developer.android.com/reference/android/app/Activity.html}. You should read through this page to better understand the technical aspects of Activities}. 
+\end{itemize}
+
+
+\subsection{Creating New Activities}
+\paragraph{} Most of the Android apps that we use probably have more than one screen. Think of all of the apps that you have used and the number of different screens that you might navigate through in order to perform different tasks. At the very least, even the simplest app, where you can do most things from a single screen, usually have a second screen to allow you to adjust your settings and personal preferences. If an app has more than one screen then it will also have more than one activity. More than one activity basically means more than one java file containing a class that inherits from Activity, and more than one layout file to give a view, or screen, for the Activity. This means that if we want to have more than one Activity in our Android apps then we are going to have to add new Java and XML files. There are two ways to do this, the easy way, which you will probably use most often, which involves letting Android Studio add the new file that you dictate. The alternative is to manually add the Java and XML files into the project. We can try both, and it is a good idea to do both at least once, but generally the easiest method is to let Android Studio do all the work and produce the correct files.
+
+\subsubsection{Adding a new Activity}
+\paragraph{} Creating new activities is straightforward if you are working in Android Studio as it provides helper wizards to add the new code for you. For example, if in the studio interface you right click on the app folder in the project explorer then select ``New'' $>$ ``Activity'' $>$ ``Empty Activity'' and accept the defaults then Android Studio will add in the necessary code to support your new Activity.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{images/activities_add_activity_studio}
+\caption{Android Studio Add Activity Options}
+\label{fig:activities_add_activity_studio}
+\end{figure}
+
+
+\paragraph{} The new files that are generated for you include a java src file called `Main2Activity.java', an XML activity file called `activity\_main2.xml', and an entry in the AndroidManifest.xml file. Our project layout should now look something like the following:
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{images/activities_project_explorer}
+\caption{Android Project Files}
+\label{fig:activities_project_explorer}
+\end{figure}
+
+\paragraph{} Notice that we have new Java and resource files for our new activity. Open up these files and explore tham. Compare the new activity files to the ones we started with. Other than different names, there should not be too much difference between them.
+
+\paragraph{} There shouldn't be any real surprises in the MainActivity2.java file but if you are unsure, compare it to MainActivity.java
+
+\begin{lstlisting}
+package org.simonwells.testapp;
+
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+
+public class Main2Activity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main2);
+    }
+}
+\end{lstlisting}
+
+\paragraph{} The layout for activity\_main2.xml looks pretty similar to activity\_main.xml
+
+\begin{lstlisting}
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main2"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="org.simonwells.testapp.Main2Activity">
+
+</RelativeLayout>
+
+\end{lstlisting}
+
+\paragraph{} As well as generating new files, Android Studio add a Manifest entry for the new Activity as shown here:
 
 \begin{lstlisting}
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.simonwells.multipleactivities1" >
+    package="org.simonwells.testapp">
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
-        <activity
-            android:name=".MainActivity"
-            android:label="@string/app_name" >
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".MainActivity2"
-            android:label="@string/app_name" >
-        </activity>
+        <activity android:name=".Main2Activity"></activity>
     </application>
 
 </manifest>
 \end{lstlisting}
 
-\paragraph{} That is all that is needed to create a new Activity. Two new files, a java source file and an XML layout file, and a couple of edits to make sure that your app knows about the new stuff. You can now run your app.
 
-\paragraph{} Hmmm. Not much difference there? Why do you think that is? 
+\paragraph{} That is all that is needed to create a new Activity as far as Android is concerned. Basically, two new files, a Java source file and an XML layout file, plus a couple of edits to the Android Manifest to make sure that your app knows about the new stuff. You can now run your app.
 
-\paragraph{} Lets edit our AndroidManifest.xml to display the new Activity instead of the default one. To do this we need to add an $<$intent-filter$>$ to our $<$activity$>$ section for the new activity and remove it from the old one, e.g.
+\paragraph{} Hmmm. Not much difference there? Why do you think that is?
 
+\subsubsection{Switching Activities using the Android Manifest}
+
+\paragraph{} The quickest way to display your new Activity is to edit the AndroidManifest.xml to tell it to launch the new activity instead of the default. Let's do that. All we need to do is move the $<$intent-filter$>$ block from MainActivity to our new MainActivity2 block as follows
 \begin{lstlisting}
-<intent-filter>
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.simonwells.testapp">
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity android:name=".MainActivity"></activity>
+        <activity android:name=".Main2Activity">
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+    </application>
+
+</manifest>
 \end{lstlisting}
 
 \paragraph{} So your edited AndroidManifest.xml should look like this:
 
-\begin{lstlisting}
-<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.simonwells.multipleactivities1" >
+\paragraph{} Now run your app. You should now see the second Activity displayed. You can tell the difference because your second activity doesn't have the hello world message. Try adding some new elements to your Activities so that you can tell them apart more easily.
 
-    <application
-        android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
-        android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
-        <activity
-            android:name=".MainActivity"
-            android:label="@string/app_name" >
+\paragraph{} But this isn't really good enough. We can't edit the app's manifest file every time we want to create a new Activity. We need another approach.
 
-        </activity>
-        <activity
-            android:name=".MainActivity2"
-            android:label="@string/app_name" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-    </application>
-
-</manifest>
-\end{lstlisting}
-
-\paragraph{} Now run your app. You should now see the second Activity displayed. You can tell the difference because instead of the ``Hello world!'' message you should see the ``ACTIVITY TWO!!!!???!!'' message. But this isn't really good enough. We can't edit the app's manifest file every time we want to create a new Activity.
-
-\subsection{Starting}
-\paragraph{} Create a new Android project to include three activity classes. Up until now we have only been using a single Activity in our applications, now we will be using multiple Activity classes we will need a way to start them. We do this through launching an “intent” and passing in the name of the activity you want to start. Check out http://developer.android.com/guide/topics/fundamentals.html for more information on Intents. Below is some simple code that will start an Activity on a Button click:
+\subsubsection{Launching a new Activity from code}
+\paragraph{} Create a new Android Studio project and add a second activity as we did earlier in the chapter. Once you know that it compiles and runs correctly you can do the following: Add a button to activity\_main.xml then add a handler for the button to your MainActivity.java file so that it looks like the following:
 
 \begin{lstlisting}
-Button button1 = (Button) findViewById(R.id.button1);
-button1.setOnClickListener(new OnClickListener() {
-	public void onClick(View v) {
-		Intent activityA = new Intent(MainActivity.this, ActivityA.class);
-		startActivity(activityA);
-	}
-});
-\end{lstlisting}
+package org.simonwells.testapp;
 
-\paragraph{} Now create a new class in your project – call it ActivityA. It doesn’t have to do anything in particular, for example – this one just displays a toast so you know you’re now in ActivityA:
-
-\begin{lstlisting}
-package com.example.w4p2;
-
-import android.app.Activity;
+import android.content.Intent;
+import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.Toast;
+import android.view.View;
+import android.widget.Button;
 
-public class ActivityA extends Activity {
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_a); //You'll need to create a layout named activity_a
-		
-		Toast.makeText(getBaseContext(), "In Activity A", Toast.LENGTH_LONG).show();
-		//Navigation back is via phones back button
-	}
+public class MainActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        Button btn = (Button) findViewById(R.id.button);
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent activity2 = new Intent(MainActivity.this, Main2Activity.class);
+                startActivity(activity2);
+            }
+        });
+    }
 }
 \end{lstlisting}
 
-\paragraph{} Then add it to your android manifest file (which says what makes up your project).
+\paragraph{} and your corresponding activity\_main.xml will look like this:
 
 \begin{lstlisting}
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.w4p2"
-    android:versionCode="1"
-    android:versionName="1.0" >
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="org.simonwells.testapp.MainActivity">
 
-    <uses-sdk
-        android:minSdkVersion="8"
-        android:targetSdkVersion="17" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hello World!"
+        android:id="@+id/textView" />
 
-    <application
-        android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
-        android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
-        <activity
-            android:name="com.example.w4p2.MainActivity"
-            android:label="@string/app_name" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+    <Button
+        android:text="Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="170dp"
+        android:id="@+id/button" />
+</RelativeLayout>
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity android:name="ActivityA" />
-        <activity android:name="ActivityB" />
-    </application>
-</manifest>
 \end{lstlisting}
 
-\paragraph{} Now add a second activity – B – just to try it all out. What if we need to get data back from this new activity? The best way is to use a different method: startActivityForResult (activityA, 1);
-So we launch the activity then what? We need a handler to call when our activity has completed. Add this code in your main activity:
+\paragraph{} Now run your app. You should be able to click the button and cause the second activity to be displayed. You will have to use the device's back button to return to the previous Activity. Consider how you might return to the previous activity from within your app? Perhaps a button or other navigation element that, when clicked finishes the current Activity and returns you to the parent? Do some research and see if you can work out how to do this for yourself.
 
-\begin{lstlisting}
-protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    	//Check which request we're responding to - only 1!
-    	if (requestCode == 1) {
-    		//Make sure request was successful
-    		if (resultCode == 1) {
-    			String returnString = data.getStringExtra("String");
-    			Toast.makeText(getBaseContext(), "In main and string returned = " + returnString, Toast.LENGTH_SHORT).show();
-    		}
-    	}
-}
-\end{lstlisting}
-
-\paragraph{} And what does the activity you launch look like now? We have to get the data packaged up as we expect to receive it:
-
-\begin{lstlisting}
-String stringToReturn = "Sally Smith";
-        Intent returnIntent = new Intent();
-        returnIntent.putExtra("String", stringToReturn);
-        setResult(1, returnIntent);
-        finish();
-\end{lstlisting}
-
-\paragraph{} Have a go! If you get stuck ask!
 
 %\subsection{Managing Multiple Activities}
 %\paragraph{} Rather than creating a new activity for every screen in your app, it make sense to reuse resources when appropriate. For example, if your user is presented with a list of items that can be displayed, you could either have an activity for each item and switch between them after user interaction, or a single activity, designed to display your items consistently, which is reused based on user interaction. Having less activities, but reusing them in a sensible manner can help to stop your app from becoming unmanageable.
