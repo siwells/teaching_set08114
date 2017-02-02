@@ -165,7 +165,7 @@ public class Main2Activity extends AppCompatActivity {
 
 \subsubsection{Switching Activities using the Android Manifest}
 
-\paragraph{} The quickest way to display your new Activity is to edit the AndroidManifest.xml to tell it to launch the new activity instead of the default. Let's do that. All we need to do is move the $<$intent-filter$>$ block from MainActivity to our new MainActivity2 block as follows
+\paragraph{} The quickest way to display your new Activity is to edit the AndroidManifest.xml to tell it to launch the new activity instead of the default. Let's do that. All we need to do is move the $<$intent-filter$>$ block from MainActivity to our new MainActivity2 block as follows:
 \begin{lstlisting}
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
@@ -190,7 +190,6 @@ public class Main2Activity extends AppCompatActivity {
 </manifest>
 \end{lstlisting}
 
-\paragraph{} So your edited AndroidManifest.xml should look like this:
 
 \paragraph{} Now run your app. You should now see the second Activity displayed. You can tell the difference because your second activity doesn't have the hello world message. Try adding some new elements to your Activities so that you can tell them apart more easily.
 
@@ -261,6 +260,24 @@ public class MainActivity extends AppCompatActivity {
 \end{lstlisting}
 
 \paragraph{} Now run your app. You should be able to click the button and cause the second activity to be displayed. You will have to use the device's back button to return to the previous Activity. Consider how you might return to the previous activity from within your app? Perhaps a button or other navigation element that, when clicked finishes the current Activity and returns you to the parent? Do some research and see if you can work out how to do this for yourself.
+
+\begin{figure}[H]%[htb]
+\centering
+    \begin{subfigure}[b]{0.45\textwidth}
+        \includegraphics[width=\textwidth]{images/launching_activities_1}
+        \caption{The first Activity that is launched}
+        \label{fig:launching_activities_1}
+    \end{subfigure}
+    ~ 
+    \begin{subfigure}[b]{0.45\textwidth}
+        \includegraphics[width=\textwidth]{images/launching_activities_2}
+        \caption{The second Acitivty that is launched}
+        \label{fig:launching_activities_2}
+    \end{subfigure}
+\caption{The Activity shown in \ref{fig:launching_activities_1} is displayed first then once the button is clicked the Activity shown in \ref{fig:launching_activities_2} is displayed. Recall that new Activities are placed onto the Activity stack, so the Activity shown in \ref{fig:launching_activities_2} is placed on top of \ref{fig:launching_activities_1}. To navitate back from \ref{fig:launching_activities_2} to \ref{fig:launching_activities_1} you must used the device back button. }
+\label{fig:launching_activities}
+\end{figure}
+
 
 
 %\subsection{Managing Multiple Activities}
