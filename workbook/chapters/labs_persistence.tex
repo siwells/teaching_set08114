@@ -16,11 +16,8 @@
 \paragraph{} Create a new Android project and delete the `Hello World' label. Now open `strings.xml' and add some new strings. We need a string to store the name of the shared preferences file `preference\_file\_name' and a string for the name of our data key `high\_score'. We also need two more strings for the labels for our buttons, `get\_something' and `do\_something'. Our strings.xml should look similar to this:
 
 \begin{lstlisting}
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <string name="app_name">TestPrefs</string>
-    <string name="action_settings">Settings</string>
+    <string name="app_name">SharedPreferences</string>
     <string name="preference_file_name">MyPrefs</string>
     <string name="high_score">0</string>
     <string name="get_something">Get Prefs</string>
@@ -28,39 +25,91 @@
 </resources>
 \end{lstlisting}
 
-\paragraph{} Now we can edit our layout to display the buttons. Add a LinearLayout to activity\_main.xml and give this layout two buttons, `btn1' and `btn2' as children. The text for `btn1' should use the `get\_something' string and the text for `btn2' should use the `do\_something' string. When you are done, your activity\_main.xml should look something like this:
+\paragraph{} Now we can edit our layout to display the buttons. Edit your activity\_main.xml so that it uses a LinearLayout and give this layout two buttons, `btn1' and `btn2' as children. The text for `btn1' should use the `get\_something' string and the text for `btn2' should use the `do\_something' string that we just added to strings.xml. When you are done, your activity\_main.xml should look something like this:
 
 \begin{lstlisting}
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity">
+    android:orientation="vertical"
+    tools:context="org.simonwells.sharedpreferences.MainActivity">
 
-    <LinearLayout
+    <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:orientation="vertical">
+        android:text="@string/get_something"
+        android:id="@+id/btn1"
+        android:layout_gravity="center_horizontal" />
 
-        <Button
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/get_something"
-            android:id="@+id/btn1" />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/do_something"
+        android:id="@+id/btn2"
+        android:layout_gravity="center_horizontal" />
 
-        <Button
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/do_something"
-            android:id="@+id/btn2" />
-
-    </LinearLayout>
-</RelativeLayout>
+</LinearLayout>
 \end{lstlisting}
 
-\paragraph{} Ensure that your app compiles and runs before proceeding and fix any bugs or typos. Now we can get those buttons to do something. In activity\_main.java we need to do the following:
+\paragraph{} Ensure that your app compiles and runs before proceeding. If necessary, fix any bugs or typos as there's no point adding more code until what we have works. Our MainActivity.java file should end up looking something similar to the following:
+
+\begin{lstlisting}
+package org.simonwells.sharedpreferences;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
+
+import java.util.Map;
+import java.util.Random;
+
+public class MainActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        final Random rnd = new Random();
+
+        Button get_something = (Button) findViewById(R.id.btn1);
+        get_something.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SharedPreferences prefs = getBaseContext().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+                Map mp = prefs.getAll();
+                Toast.makeText(getBaseContext(), mp.toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        Button do_something = (Button) findViewById(R.id.btn2);
+        do_something.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SharedPreferences prefs = getBaseContext().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+                int newHighScore = rnd.nextInt(1000);
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putInt("0", newHighScore);
+                editor.commit();
+                Toast.makeText(getBaseContext(), "New High Score: "+newHighScore, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+}
+\end{lstlisting}
+
+\paragraph{} Let's take a look at all the things that we just did:
 
 \begin{enumerate}
 \item Set up a random number object, e.g.
@@ -97,89 +146,19 @@ Button do_something = (Button) findViewById(R.id.btn2);
 \end{lstlisting}
 \end{enumerate}
 
-\paragraph{} Our MainActivity.java file should end up looking something similar to the following:
 
-\begin{lstlisting}
-package org.simonwells.testprefs;
+\paragraph{} When you run it, your new app should look something like the following:
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.support.v7.app.ActionBarActivity;
-import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.Toast;
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{images/sharedprefs_avd}
+\caption{The Shared Prefs Example}
+\label{fig:sharedprefs_avd}
+\end{figure}
 
-import java.util.Map;
-import java.util.Random;
+\paragraph{} You should use the Shared preferences documentation\footnote{\url{http://developer.android.com/reference/android/content/SharedPreferences.html}} to explore more functionality of this aspect of data storage. Try retrieving the specific key rather than all of the keys in the get\_something button handler. Now try storing your name into the shared preferenced file and retrieving it.
 
-
-public class MainActivity extends ActionBarActivity {
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        final Random rnd = new Random();
-
-        Button get_something = (Button) findViewById(R.id.btn1);
-        get_something.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SharedPreferences prefs = getBaseContext().getSharedPreferences(getString(R.string.preference_file_name), Context.MODE_PRIVATE);
-                Map mp = prefs.getAll();
-                Toast.makeText(getBaseContext(), mp.toString(), Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        Button do_something = (Button) findViewById(R.id.btn2);
-        do_something.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SharedPreferences prefs = getBaseContext().getSharedPreferences(getString(R.string.preference_file_name), Context.MODE_PRIVATE);
-                //Map mp = prefs.getAll();
-                int newHighScore = rnd.nextInt(1000);
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.putInt(getString(R.string.high_score), newHighScore);
-                editor.commit();
-                Toast.makeText(getBaseContext(), "New High Score"+newHighScore, Toast.LENGTH_SHORT).show();
-            }
-        });
-
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-}
-
-\end{lstlisting}
-
-\paragraph{} Use the Shared preferences documentation\footnote{\url{http://developer.android.com/reference/android/content/SharedPreferences.html}} to explore more functionality of this aspect of data storage. Try retrieving the specific key rather than all of the keys in the get\_something button handler. Now try storing your name into the shared preferenced file and retrieving it.
-
-\paragraph{} Although you can exploit this for more advanced data storage requirements, the trouble and complexities of doing so mean that it is usually better to adopt an appropriate storage method from the beginning.
+\paragraph{} Although you can exploit this for more advanced data storage requirements, the trouble and complexities of doing so can mean that it is better to adopt other strategies. The most appropriate storage method for a given app is highly dependent upon that app, what it is designed to do, and how that design is implemented.
 
 \section{Internal Storage}
 \paragraph{} Every app has a private directory, outside of the application bundle, in which it can store files. This is usually located on the devices internal storage and is private to the app and cannot be accessed by any other apps. These files are tied to the lifetime of the app and deleted when the app is deleted (but are kept during updates). The Android training documentation\footnote{\url{http://developer.android.com/training/basics/data-storage/files.html}} has more information on saving files to internal storage.
