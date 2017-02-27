@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <string name="app_name">PreferencesExample</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
+    <string name="app_name">SharedPreferences</string>
     <string name="preference_file_name">MyPrefs</string>
     <string name="high_score">0</string>
     <string name="get_something">Get Prefs</string>
     <string name="do_something">Add Pref</string>
-
 </resources>
+
