@@ -161,124 +161,110 @@ Button do_something = (Button) findViewById(R.id.btn2);
 \paragraph{} Although you can exploit this for more advanced data storage requirements, the trouble and complexities of doing so can mean that it is better to adopt other strategies. The most appropriate storage method for a given app is highly dependent upon that app, what it is designed to do, and how that design is implemented.
 
 \section{Internal Storage}
-\paragraph{} Every app has a private directory, outside of the application bundle, in which it can store files. This is usually located on the devices internal storage and is private to the app and cannot be accessed by any other apps. These files are tied to the lifetime of the app and deleted when the app is deleted (but are kept during updates). The Android training documentation\footnote{\url{http://developer.android.com/training/basics/data-storage/files.html}} has more information on saving files to internal storage.
+\paragraph{} Every app has a private directory, outside of the application bundle, in which it can store files. This is usually located on the device's internal storage, is private to the app, and cannot be accessed by any other apps. These files are tied to the lifetime of the app and deleted when the app is deleted (but are kept during updates). The Android training documentation\footnote{\url{http://developer.android.com/training/basics/data-storage/files.html}} has more information on saving files to internal storage.
 
-\paragraph{} For this part of the pracical we will build a similar interface to the one we did for the shared preferences data perisistence example earlier, e.g. a button to save some data to a file on internal storage and a button to load the data from that file and display the loaded data using a Toast. The data we will store will be the data as this is something that is straightforward to generate and is dynamic so will change the data stored each time we press the save button.
+\paragraph{} For this part of the practical we will build a similar interface to the one we did for the shared preferences data persistence example earlier, e.g. a button to save some data to a file on internal storage and a button to load the data from that file and display the loaded data using a Toast. The data we will store will be the date as this is something that is straightforward to generate and is dynamic so will change the data stored each time we press the save button so that we can see verify to ourselves that our file changes.
 
-\paragraph{} Create a new Android project. Delete the `Hello World' TextView and add to buttons, `Save Something' and `load something' to a vertical LinearLayout. Add appropriate strings to support this to strings.xml so that your activity\_main.xml i something like the following:
+\paragraph{} Create a new Android project. Delete the `Hello World' TextView and add two buttons, `Save Something' and `load something' to a vertical LinearLayout. Add appropriate strings to support this to strings.xml so that your activity\_main.xml i something like the following:
 
 \begin{lstlisting}
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity">
+    android:orientation="vertical"
+    tools:context="org.simonwells.internalfiles.MainActivity">
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true">
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/save_file"
+        android:id="@+id/btn1"
+        android:layout_gravity="center_horizontal" />
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/save_file"
-            android:id="@+id/button1"
-            android:layout_gravity="center_horizontal" />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/load_file"
+        android:id="@+id/btn2"
+        android:layout_gravity="center_horizontal" />
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/load_file"
-            android:id="@+id/button2"
-            android:layout_gravity="center_horizontal" />
-    </LinearLayout>
-</RelativeLayout>
+</LinearLayout>
 \end{lstlisting}
 
 \paragraph{} and your strings.xml is something like the following:
 
 \begin{lstlisting}
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <string name="app_name">TestInternalFile</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
+    <string name="app_name">InternalFiles</string>
     <string name="load_file">LOAD SOMETHING</string>
     <string name="save_file">SAVE SOMETHING</string>
-
 </resources>
 \end{lstlisting}
 
 \paragraph{} That gives us an interface with some buttons ready to do something. Now all we need to do is get the buttons to actually do something, like saving and loading files. To do this we need to add click listeners for each button to the onCreate method in MainActivity.java where the listener for the first button creates a new file, generates a string from the current date, then writes the string to the file we specified. For example, 
 
 \begin{lstlisting}
-Button btn1 = (Button) findViewById(R.id.button1);
-        btn1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+Button btn1 = (Button) findViewById(R.id.btn1);
+btn1.setOnClickListener(new View.OnClickListener() {
+    @Override
+    public void onClick(View view) {
+        String filename = "napierfile";
+        String outString = new Date().toString();
+        FileOutputStream outStream;
 
-                String filename = "napierfile";
-                String outString = new Date().toString();
-                FileOutputStream outStream;
-
-                try {
-                    outStream = getApplicationContext().openFileOutput(filename, Context.MODE_PRIVATE);
-                    outStream.write(outString.getBytes());
-                    outStream.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+        try {
+            outStream = getApplicationContext().openFileOutput(filename, Context.MODE_PRIVATE);
+            outStream.write(outString.getBytes());
+            outStream.close();
+        } catch(Exception e) { e. printStackTrace(); }
+    }
+});
 \end{lstlisting}
 
 \paragraph{} For our second button we want to read in the contents of our specified file then display those contents in a Toast. For example,
 
 \begin{lstlisting}
-Button btn2 = (Button) findViewById(R.id.button2);
-        btn2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int ch;
+Button btn2 = (Button) findViewById(R.id.btn2);
+btn2.setOnClickListener(new View.OnClickListener() {
+@Override
+public void onClick(View view) {
+    int ch;
+    String filename = "napierfile";
+    StringBuffer inString = new StringBuffer("");
+    FileInputStream inStream;
 
-                String filename = "napierfile";
-                StringBuffer inString = new StringBuffer("");
-                FileInputStream inStream;
-
-                try {
-                    inStream = getApplicationContext().openFileInput(filename);
-                    try {
-                        while ((ch = inStream.read()) != -1)
-                            inString.append((char) ch);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    inStream.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-                String data = new String(inString);
-                Toast.makeText(getBaseContext(),data,Toast.LENGTH_SHORT).show();
-            }
-        });
+    try {
+        inStream = getApplicationContext().openFileInput(filename);
+        try {
+            while ((ch = inStream.read()) != -1)
+                inString.append((char) ch);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    String data = new String(inString);
+    Toast.makeText(getBaseContext(), data, Toast.LENGTH_SHORT).show();
+}
+});
 \end{lstlisting}
 
 \paragraph{} Putting this all together, our MainActivity.java should look something similar to the following:
 
 \begin{lstlisting}
-package org.simonwells.testinternalfile;
+package org.simonwells.internalfiles;
 
 import android.content.Context;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -288,19 +274,17 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
 
-
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Button btn1 = (Button) findViewById(R.id.button1);
+        Button btn1 = (Button) findViewById(R.id.btn1);
         btn1.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-
+            public void onClick(View view) {
                 String filename = "napierfile";
                 String outString = new Date().toString();
                 FileOutputStream outStream;
@@ -309,18 +293,15 @@ public class MainActivity extends ActionBarActivity {
                     outStream = getApplicationContext().openFileOutput(filename, Context.MODE_PRIVATE);
                     outStream.write(outString.getBytes());
                     outStream.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                } catch(Exception e) { e. printStackTrace(); }
             }
         });
 
-        Button btn2 = (Button) findViewById(R.id.button2);
+        Button btn2 = (Button) findViewById(R.id.btn2);
         btn2.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
                 int ch;
-
                 String filename = "napierfile";
                 StringBuffer inString = new StringBuffer("");
                 FileInputStream inStream;
@@ -333,40 +314,26 @@ public class MainActivity extends ActionBarActivity {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    inStream.close();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
                 String data = new String(inString);
-                Toast.makeText(getBaseContext(),data,Toast.LENGTH_SHORT).show();
+                Toast.makeText(getBaseContext(), data, Toast.LENGTH_SHORT).show();
             }
         });
     }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 }
 \end{lstlisting}
+
+\paragraph{} When you run it, your new app should look something like the following:
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{images/internalstorage_avd}
+\caption{The Internal Storage Example}
+\label{fig:internalstorage_avd}
+\end{figure}
+
 
 \section{Internal Storage: Caching}
 \paragraph{} Android provides a mechanism for caching files which can be used for temporary storage that need not be kept for ever. For example, if you build a navigation app that uses maps you might want to cache lots of map files for the area that your user is in to enable a good and responsive experience. However, map data uses a lot of storage, and can usually be re-downloaded as requiredso you might plan to use the cache directory to store mapping data so that, if the device begins to run low on storage, the Android OS can reclaim storage space by emptying the cache. Notice that this is an {\emph{emergency measure}} - you must still maintain the size of data that you use as small and current so that you do not waste resources as the OS does not empty the cache periodically but only when storage space needs to be reclaimed in order to ensure reliable overall system functionality. You should also take not that users can also manually clear the cache at any time.
