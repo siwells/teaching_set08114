@@ -346,10 +346,7 @@ public class MainActivity extends AppCompatActivity {
 \paragraph{} To use external storage we need to edit your apps manifest file to enable the app to obtain permission. For example, within your app's AndroidManifest.xml file:
 
 \begin{lstlisting}
-<manifest ...>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    ...
-</manifest>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 \end{lstlisting}
 
 \paragraph{} Working with files on external storage is very similar to the example for internal storage except that, because external storage might not be available, for example, you might remove the SD card, you need to do some checks first. For example, to check if external storage is available to read and write we could use a code fragment like this:
@@ -382,50 +379,43 @@ File file = new File(getApplicationContext().getExternalFilesDir(null), "napier.
 \paragraph{} So lets get started. Set up your Activity to hold a user interface displaying two buttons as we did for the internal storage. You should have an activity\_main.xml that looks similar to this:
 
 \begin{lstlisting}
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity">
+    android:orientation="vertical"
+    tools:context="org.simonwells.externalfiles.MainActivity">
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentTop="true">
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/save_file"
+        android:id="@+id/btn1"
+        android:layout_gravity="center_horizontal" />
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/save_file"
-            android:id="@+id/button1"
-            android:layout_gravity="center_horizontal" />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/load_file"
+        android:id="@+id/btn2"
+        android:layout_gravity="center_horizontal" />
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/load_file"
-            android:id="@+id/button2"
-            android:layout_gravity="center_horizontal" />
-    </LinearLayout>
-</RelativeLayout>
-
+</LinearLayout>
 \end{lstlisting}
 
 \paragraph{} and a strings.xml that looks similar to this:
 
 \begin{lstlisting}
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <string name="app_name">TestExternalFile</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
-    <string name="save_file">SAVE</string>
-    <string name="load_file">LOAD</string>
-
+    <string name="app_name">ExternalFiles</string>
+    <string name="save_file">Save</string>
+    <string name="load_file">Load</string>
 </resources>
 \end{lstlisting}
 
@@ -434,7 +424,7 @@ File file = new File(getApplicationContext().getExternalFilesDir(null), "napier.
 \begin{lstlisting}
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.simonwells.testexternalfile" >
+    package="org.simonwells.externalfileexample" >
 
     <application
         android:allowBackup="true"
@@ -455,19 +445,17 @@ File file = new File(getApplicationContext().getExternalFilesDir(null), "napier.
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
 </manifest>
-
 \end{lstlisting}
 
 \paragraph{} Now we can use some java to glue everything together. We need click handlers for each of the load and save buttons as shown here:
 
 \begin{lstlisting}
-package org.simonwells.testexternalfile;
+package org.simonwells.externalfiles;
 
 import android.os.Environment;
-import android.support.v7.app.ActionBarActivity;
+import android.os.ParcelFileDescriptor;
+import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -475,89 +463,72 @@ import android.widget.Toast;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
 
-
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Button btn1 = (Button) findViewById(R.id.button1);
+        Button btn1 = (Button) findViewById(R.id.btn1);
         btn1.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
                 String state = Environment.getExternalStorageState();
-                if (Environment.MEDIA_MOUNTED.equals(state)) {
-                    File file = new File(getApplicationContext().getExternalFilesDir(null), "napier.txt");
+                if (Environment.MEDIA_MOUNTED.equals(state))
+                {
+                    File file = new File(getApplicationContext()
+                            .getExternalFilesDir(null), "napier.txt");
                     String datetime = new Date().toString();
-
                     try{
                         OutputStream os = new FileOutputStream(file);
                         os.write(datetime.getBytes());
-                        os.close();
-                    } catch(Exception e){ e.printStackTrace(); }
+                        os.close();;
+                    } catch (Exception e) {e.printStackTrace();}
                 }
             }
         });
 
-        Button btn2 = (Button) findViewById(R.id.button2);
+        Button btn2 = (Button) findViewById(R.id.btn2);
         btn2.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
                 String state = Environment.getExternalStorageState();
-                if (Environment.MEDIA_MOUNTED.equals(state)){
-                    File file = new File(getApplicationContext().getExternalFilesDir(null), "napier.txt");
+                if(Environment.MEDIA_MOUNTED.equals(state))
+                {
+                    File file = new File(getApplicationContext()
+                            .getExternalFilesDir(null), "napier.txt");
                     StringBuffer inStr = new StringBuffer("");
                     int ch;
-
                     try{
                         InputStream is = new FileInputStream(file);
-                        while ((ch = is.read()) != -1){
-                            inStr.append((char) ch);
-                        }
-                        is.close();
-                    } catch(IOException e) { e.printStackTrace(); }
+                        while((ch = is.read()) != -1) {inStr.append((char) ch);}
+                    } catch (Exception e) {e.printStackTrace();}
                     String data = new String(inStr);
                     Toast.makeText(getApplicationContext(), data, Toast.LENGTH_SHORT).show();
                 }
             }
         });
     }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 }
 \end{lstlisting}
 
-\paragraph{} We can now double check that the file is stored on the external storage. On your Android device, or in the emulator, open the `My files' app and click on `Android' then `data'. Now find the folder that matches the namespace for your app, e.g. starting uk.ac.napier or whatever you used when you set up the Android project. Within that folder you should select `files' and you should then be presented with `napier.txt'. Clicking on this file should bring up an intent selection dialogue so that you can decide which app to open it in. Select an app and you should see the datetime string displayed from the last time you used your app to store a file to external storage.
+\paragraph{} When you run it, your new app should look something like the following:
 
-\paragraph{} There are a few things to consider when storing data on external storage. For example, many app can scan external storage, because it is public, to find music, ringtones, videos, picture, \&c. If you don't want, for example an MP3, to show up on such a scan then creating an empty file called .nomedia in the directory holding the MP3 will cause that folder to be ignored by media scanners. Similarly, if your app scans externl storage for media files to use then it should also respect the .nomedia convention and ignore any directories containing a file so-named. In contrast however, if you do want to share media from your app with other apps then you should consider using the default directories such as Music/, Ringtones/, \&c. to store those files as this is the expected location for them and the places that users will look to find such files.
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{images/externalstorage_avd}
+\caption{The External Storage Example}
+\label{fig:externalstorage_avd}
+\end{figure}
+
+%\paragraph{} We can now double check that the file is stored on the external storage. On your Android device, or in the emulator, open the `My files' app and click on `Android' then `data'. Now find the folder that matches the namespace for your app, e.g. starting uk.ac.napier or whatever you used when you set up the Android project. Within that folder you should select `files' and you should then be presented with `napier.txt'. Clicking on this file should bring up an intent selection dialogue so that you can decide which app to open it in. Select an app and you should see the datetime string displayed from the last time you used your app to store a file to external storage.
+
+\paragraph{} There are a few things to consider when storing data on external storage. For example, many apps can scan external storage, because it is public, to find music, ringtones, videos, picture, \&c. If you don't want, for example an MP3, to show up on such a scan then creating an empty file called .nomedia in the directory holding the MP3 will cause that folder to be ignored by media scanners. Similarly, if your app scans externl storage for media files to use then it should also respect the .nomedia convention and ignore any directories containing a file so-named. In contrast however, if you do want to share media from your app with other apps then you should consider using the default directories such as Music/, Ringtones/, \&c. to store those files as this is the expected location for them and the places that users will look to find such files.
 
 \section{SQLite}
 \paragraph{} Using SQLite is a common exercise on Android for storing data. There are many tutorials onlinethat describe the initial setup required but most of this is actually using Java rather than an Android topic so using SQLite in Android is left as an advanced exercise for now. If you have done the other persistence exercises earlier in the chapter then you should research SQLite on Android and work through some online tutorials.
