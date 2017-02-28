@@ -21,58 +21,91 @@
     <uses-permission android:name="android.permission.SEND_SMS"/>
 \end{lstlisting}
 
+\paragraph{} so that our AndroidManifest.xml looks like this:
+
+\begin{lstlisting}
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.simonwells.sms">
+    <uses-permission android:name="android.permission.SEND_SMS"/>
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity android:name=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>
+\end{lstlisting}
+
 \paragraph{} We also need to add a string resource to our strings.xml to store the text of our button in the UI:
 
 \begin{lstlisting}
     <string name="send_sms">SEND SMS</string>
 \end{lstlisting}
 
+\paragraph{} so that strings.xml looks like this:
+
+\begin{lstlisting}
+<resources>
+    <string name="app_name">SMS</string>
+    <string name="send_sms">SEND SMS</string>
+</resources>
+\end{lstlisting}
+
+
 \paragraph{} Now we can construct our layout in acivtiy\_main.xml which means we delete the `Hello World' TextView and add a LinearLayout which holds a Button view:
 
 \begin{lstlisting}
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity">
+    android:orientation="vertical"
+    tools:context="org.simonwells.sms.MainActivity">
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true">
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/send_sms"
-            android:id="@+id/btn1"
-            android:layout_gravity="center_horizontal" />
-    </LinearLayout>
-</RelativeLayout>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/send_sms"
+        android:id="@+id/btn1"
+        android:layout_gravity="center_horizontal"/>
+</LinearLayout>
 \end{lstlisting}
 
-\paragraph{} Now we have arranged the preliminaries we can get on with the actual code to send the SMS. This involves setting up a click handler in the onCreate method of our MainActivity class and adding a new method to send the SMS message when the user clicks on our button. Our MainActivity.java should end up looking something similar to this:
+\paragraph{} Now we have arranged the preliminaries we can get on with the actual code to send the SMS. This is actually quite complex due to an increased focus on security and privacy since API level 23. This eans that an app that wishes to us a \emph{so-called} ``dangerous permission'' must actively seek permission from the user. As a result we have to add permissions checking code in onCreate as well as as invoking permissions seeking behaviour then handling the returned information from the user. If the user says ``nope'' then we disable the click functionality of the send SMS button the show a Toast to let the user know. Otherwise we enable the send SMS button. We then need a click handler to actually invoke the sendSMS method whenever the button is clicked. This involves setting up a click handler in the usual fashion in the onCreate method of our MainActivity class and adding a new method to send the SMS message when the user clicks on our button. Our MainActivity.java should end up looking something similar to this:
 
 \begin{lstlisting}
-package org.simonwells.testsms;
+package org.simonwells.sms;
 
-import android.support.v7.app.ActionBarActivity;
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.telephony.SmsManager;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
+public class MainActivity extends AppCompatActivity {
 
-public class MainActivity extends ActionBarActivity {
-
-    Button btn1;
-
+    private static final int PERMISSION_REQUEST_CODE = 11;
+    private Button btn1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,38 +114,45 @@ public class MainActivity extends ActionBarActivity {
         btn1 = (Button) findViewById(R.id.btn1);
         btn1.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                sendSMS("5556", "Hello Napier");
-            }
+            public void onClick(View view) { sendSMS("5556", "Hello Napier"); }
         });
+
+        if(ContextCompat.checkSelfPermission(getApplicationContext(),
+                Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED)
+        {
+            if(ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.SEND_SMS))
+            {
+                btn1.setClickable(false);
+                Toast.makeText(getApplicationContext(), "No Permissions for SMS",
+                        Toast.LENGTH_LONG).show();
+            }
+            else
+            {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.SEND_SMS},
+                        PERMISSION_REQUEST_CODE);
+            }
+        }
+    }
+
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSION_REQUEST_CODE: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    btn1.setClickable(true);
+                } else {
+                    btn1.setClickable(false);
+                }
+                return;
+            }
+        }
     }
 
     private void sendSMS(String phoneNumber, String message)
     {
         SmsManager sms = SmsManager.getDefault();
         sms.sendTextMessage(phoneNumber, null, message, null, null);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 }
 \end{lstlisting}
